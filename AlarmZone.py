@@ -1,13 +1,12 @@
-#! python3.9
-import time
-import serial
+#!/usr/bin/sudo python3.10
 import re
+import os
+import sys
+import serial
 import colorama
-colorama.init()
 import keyboard
+import datetime
 
-from datetime import datetime
-from sys import platform
 
 dev_list = []
 STATUS_ZONE_TAMPER_MASK = 0x01
@@ -20,29 +19,47 @@ STATUS_ZONE_EX5_MASK    = 0x40
 STATUS_ZONE_EX6_MASK    = 0x80
 
 
+def set_os_port_path(port, UART_SPEED):
+    system = sys.platform
+    if (system == "linux") or (system == "linux2"):
+
+        serial_port = serial.Serial("/dev/ttyUSB" + port, UART_SPEED)
+        path_line = os.getcwd().split("/")
+        path = "/" + str(path_line[1]) + "/" + str(path_line[2]) + "/Log"
+        file_name = "/AlarmZone_" + datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S") + ".txt"
+
+    elif system == "win32":
+        serial_port = serial.Serial("COM" + port, UART_SPEED)
+        path_line = os.getcwd().split("\\")
+        path = path_line[0] + "\\Log"
+        file_name = "\AlarmZone_" + datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S") + ".txt"
+
+    try:
+        os.makedirs(path, 0o777)
+    except OSError as error:
+        if "[WinError 183]" in str(error):
+            print(f"Каталог {path} уже существует")
+    return serial_port, path, system, file_name
+
+
 def main():
     UART_SPEED = 115200
-
     port = input("Введите номер порта: ")
 
-    if platform == "linux" or platform == "linux2":
-        serial_port = serial.Serial("/dev/ttyUSB" + port, UART_SPEED)
-    elif platform == "win32":
-        serial_port = serial.Serial("COM" + port, UART_SPEED)
+    serial_port, path, system, file_name = set_os_port_path(port, UART_SPEED)
 
-    read_serial_port(serial_port)
+    read_serial_port(serial_port, path, file_name)
 
     serial_port.close()
 
 
-def read_serial_port(serial_port):
-    with open('/home/user/Log/tampers_' + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + '.txt',
-              'w') as logs:  # если для винды, то (r'path')
+def read_serial_port(serial_port, path, file_name):
+    with open(path + file_name, 'w') as logs:  # если для винды, то (r'path')
         flag = True
         while flag:
             line = serial_port.readline().decode('utf-8')
             line = anti_esc(line)
-            logs.write('[' + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ']' + ' ' + line)
+            logs.write('[' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ']' + ' ' + line)
             print(line)
 
             if "CMD=31" in line:

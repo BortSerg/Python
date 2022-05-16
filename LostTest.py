@@ -11,8 +11,6 @@ import colorama
 import keyboard
 
 
-
-
 def read_serial_port(serialport, logs):
     line = serialport.readline().decode('utf-8')
     line = anti_esc(line)
@@ -324,20 +322,13 @@ def test_mode():
 
 
 def set_os_serialport(port, UART_SPEED):
-    if sys.platform == "linux" or sys.platform == "linux2":
+    if (sys.platform == "linux") or (sys.platform == "linux2"):
         serialport = serial.Serial("/dev/ttyUSB" + port, UART_SPEED)
+        system = 'linux'
     elif sys.platform == "win32":
         serialport = serial.Serial("COM" + port, UART_SPEED)
-    return serialport
-
-
-def set_os_path():
-    try:
-        path_line = os.getcwd().split("/")
-        path = '/' + str(path_line[1]) + '/' + str(path_line[2]) + '/Log/LineLostTest/'
-    except OSError as error:
-        os.makedirs(path[:-1])
-    return path
+        system = 'win32'
+    return serialport, system
 
 
 def get_info(serialport, mode):
@@ -352,6 +343,7 @@ def get_info(serialport, mode):
     hub_name = ""
     hub_id = ""
     exit_flag = False
+
     while True:
         line = read_line(serialport)
         line_parts = line.split(" ")
@@ -397,10 +389,15 @@ def get_info(serialport, mode):
     return hub_name, hub_id, socket_id, relay_id_norm, relay_id_low, exit_flag
 
 
+def clear_screen(os_system):
+    if (os_system == "linux") or (os_system == "linux2"):
+        os.system('clear')
+    if os_system == "win32":
+        os.system('cls')
 
 
-def print_test_info(path, hub_name, hub_id, port, mode, socket_id, relay_id_norm, relay_id_low, type_cable, distance):
-    os.system('clear')
+def print_test_info(path, hub_name, hub_id, port, mode, socket_id, relay_id_norm, relay_id_low, type_cable, distance, system):
+    clear_screen(system)
     print("Path: %s" % path)
     print("HUB: %s %s" % (hub_id, hub_name))
     print("Port: %s" % port)
@@ -415,13 +412,35 @@ def print_test_info(path, hub_name, hub_id, port, mode, socket_id, relay_id_norm
     print("Distance: %s" % distance)
 
 
+def set_os_port_path(port, UART_SPEED):
+    system = sys.platform
+    if (system == "linux") or (system == "linux2"):
+
+        serial_port = serial.Serial("/dev/ttyUSB" + port, UART_SPEED)
+        path_line = os.getcwd().split("/")
+        path = "/" + path_line[1] + "/" + path_line[2] + "/Log/LineLostTest/"
+
+    elif system == "win32":
+        serial_port = serial.Serial("COM" + port, UART_SPEED)
+        path_line = os.getcwd().split("\\")
+        path = path_line[0] + "\\Log\\LineLostTest\\"
+
+    try:
+        os.makedirs(path)
+    except OSError as error:
+        if "[WinError 183]" in str(error):
+            print(f"Каталог {path} уже существует")
+    return serial_port, path, system
+
+
+
 def main():
     UART_SPEED = 115200
     port = input("Введите номер порта: ")
-    serialport = set_os_serialport(port, UART_SPEED)
-    path = set_os_path()
+    serial_port, path, system = set_os_port_path(port, UART_SPEED)
+
     mode = test_mode()
-    hub_name, hub_id, socket_id, relay_id_norm, relay_id_low, exit_flag = get_info(serialport, mode)
+    hub_name, hub_id, socket_id, relay_id_norm, relay_id_low, exit_flag = get_info(serial_port, mode)
 
     if exit_flag:
         print(colorama.Fore.YELLOW + "Check if the socket and relay are added to the hub" + colorama.Fore.RESET)
@@ -432,27 +451,27 @@ def main():
     distance = cable_distance()
     type_cable = cable_type()
 
-    print_test_info(path, hub_name, hub_id, port, mode, socket_id, relay_id_norm, relay_id_low, type_cable, distance)
+    print_test_info(path, hub_name, hub_id, port, mode, socket_id, relay_id_norm, relay_id_low, type_cable, distance, system)
 
     match sel1:
         case 1:
-            _220V_test(serialport, port, type_cable, socket_id, relay_id_low, relay_id_norm, mode, sel2, hub_name, hub_id, distance, path)  # 220V Tests
+            _220V_test(serial_port, port, type_cable, socket_id, relay_id_low, relay_id_norm, mode, sel2, hub_name, hub_id, distance, path)  # 220V Tests
             sel2 = 1
-            _AKB_test(serialport, port, type_cable, socket_id, relay_id_low, relay_id_norm, mode, sel2, hub_name, hub_id, distance, path)  # Normal AKB Tests
-            _LOW_AKB_test(serialport, port, type_cable, socket_id, relay_id_low, relay_id_norm, mode, sel2, hub_name, hub_id, distance, path)  # LOW AKB Tests
-            _Charge_AKB_test(serialport, port, type_cable, socket_id, relay_id_low, relay_id_norm, mode, sel2, hub_name, hub_id, distance, path)  # Charge AKB Tests
+            _AKB_test(serial_port, port, type_cable, socket_id, relay_id_low, relay_id_norm, mode, sel2, hub_name, hub_id, distance, path)  # Normal AKB Tests
+            _LOW_AKB_test(serial_port, port, type_cable, socket_id, relay_id_low, relay_id_norm, mode, sel2, hub_name, hub_id, distance, path)  # LOW AKB Tests
+            _Charge_AKB_test(serial_port, port, type_cable, socket_id, relay_id_low, relay_id_norm, mode, sel2, hub_name, hub_id, distance, path)  # Charge AKB Tests
         case 2:
-            _AKB_test(serialport, port, type_cable, socket_id, relay_id_low, relay_id_norm, mode, sel2, hub_name, hub_id, distance, path)
+            _AKB_test(serial_port, port, type_cable, socket_id, relay_id_low, relay_id_norm, mode, sel2, hub_name, hub_id, distance, path)
             sel2 = 1
-            _LOW_AKB_test(serialport, port, type_cable, socket_id, relay_id_low, relay_id_norm, mode, sel2, hub_name, hub_id, distance, path)
-            _Charge_AKB_test(serialport, port, type_cable, socket_id, relay_id_low, relay_id_norm, mode, sel2, hub_name, hub_id, distance, path)
+            _LOW_AKB_test(serial_port, port, type_cable, socket_id, relay_id_low, relay_id_norm, mode, sel2, hub_name, hub_id, distance, path)
+            _Charge_AKB_test(serial_port, port, type_cable, socket_id, relay_id_low, relay_id_norm, mode, sel2, hub_name, hub_id, distance, path)
         case 3:
-            _LOW_AKB_test(serialport, port, type_cable, socket_id, relay_id_low, relay_id_norm, mode, sel2, hub_name, hub_id, distance, path)
+            _LOW_AKB_test(serial_port, port, type_cable, socket_id, relay_id_low, relay_id_norm, mode, sel2, hub_name, hub_id, distance, path)
             sel2 = 1
-            _Charge_AKB_test(serialport, port, type_cable, socket_id, relay_id_low, relay_id_norm, mode, sel2, hub_name, hub_id, distance, path)
+            _Charge_AKB_test(serial_port, port, type_cable, socket_id, relay_id_low, relay_id_norm, mode, sel2, hub_name, hub_id, distance, path)
         case 4:
-            _Charge_AKB_test(serialport, port, type_cable, socket_id, relay_id_low, relay_id_norm, mode, sel2, hub_name, hub_id, distance, path)
-    serialport.close()
+            _Charge_AKB_test(serial_port, port, type_cable, socket_id, relay_id_low, relay_id_norm, mode, sel2, hub_name, hub_id, distance, path)
+    serial_port.close()
 
 
 if __name__ == '__main__':

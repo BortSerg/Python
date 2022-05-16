@@ -1,14 +1,12 @@
-#!/usr/bin/sudo python3.9
+#!/usr/bin/sudo python3.10
 
-import serial
-import datetime
-import colorama
 import re
+import os
 import sys
-import time
+import serial
+import colorama
+import datetime
 import keyboard
-
-UART_SPEED = 115200
 
 
 def reset_anomaly_power_count(id_dev_arr):
@@ -149,28 +147,53 @@ def anti_esc(serial_port_date_line):
     return serial_port_date_line
 
 
+def clear_screen(os_system):
+    if (os_system == "linux") or (os_system == "linux2"):
+        os.system('clear')
+    if os_system == "win32":
+        os.system('cls')
+
+
+def set_os_port_path(port, UART_SPEED):
+    system = sys.platform
+    if (system == "linux") or (system == "linux2"):
+        serial_port = serial.Serial("/dev/ttyUSB" + port, UART_SPEED)
+        path_line = os.getcwd().split("/")
+        path = "/" + str(path_line[1]) + "/" + str(path_line[2]) + "/Log"
+        file_name = "/PowerTest_" + datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S") + ".txt"
+
+    elif system == "win32":
+        serial_port = serial.Serial("COM" + port, UART_SPEED)
+        path_line = os.getcwd().split("\\")
+        path = path_line[0] + "\\Log"
+        file_name = "\PowerTest_" + datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S") + ".txt"
+
+    try:
+        os.makedirs(path)
+    except OSError as error:
+        if "[WinError 183]" in str(error):
+            print(f"Каталог {path} уже существует")
+    return serial_port, path, system, file_name
+
+
 def main():
     port = input('Введите номер порта: \r\n')
 
-    if sys.platform in {"linux", "linux2"}:
-        serial_port = serial.Serial("/dev/ttyUSB" + port, UART_SPEED)
-    elif sys.platform == "win32":
-        serial_port = serial.Serial("COM" + port, UART_SPEED)
+    serial_port, path, system, file_name = set_os_port_path(port, 115200)
 
-    with open('/home/user/Log/PowerTest_' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + '.txt',
-              'w') as logs:  # если для винды, то (r'path')
-        HUB_ID, id_dev_arr = get_hub_dev_id(serial_port, logs)
-
+    with open(path + file_name, 'w') as logs:
+        hub_id, id_dev_arr = get_hub_dev_id(serial_port, logs)
+        clear_screen(system)
         # Test 1 === Full normal power test
         print(colorama.Fore.RED + "Test #1 ==== Full normal power test" + colorama.Fore.RESET)
-        start_power_test(serial_port, logs, HUB_ID, id_dev_arr)
-        wait_hts_power_test_status(serial_port, logs, HUB_ID, id_dev_arr)
+        start_power_test(serial_port, logs, hub_id, id_dev_arr)
+        wait_hts_power_test_status(serial_port, logs, hub_id, id_dev_arr)
         state_test(serial_port, logs, id_dev_arr)
 
         # Test 2 === Start / Stop test
         print(colorama.Fore.RED + "Test #2 ==== Start / Stop test" + colorama.Fore.RESET)
-        start_stop_power_test(serial_port, logs, HUB_ID, id_dev_arr)
-        wait_hts_power_test_status(serial_port, logs, HUB_ID, id_dev_arr)
+        start_stop_power_test(serial_port, logs, hub_id, id_dev_arr)
+        wait_hts_power_test_status(serial_port, logs, hub_id, id_dev_arr)
         state_test(serial_port, logs, id_dev_arr)
 
         # Test 3 === Power Reset / Low Power
@@ -183,8 +206,8 @@ def main():
                 break
 
         print(colorama.Fore.RED + "Test #3 ==== Power Low / Power Reset" + colorama.Fore.RESET)
-        start_power_test(serial_port, logs, HUB_ID, id_dev_arr)
-        wait_hts_power_test_status(serial_port, logs, HUB_ID, id_dev_arr)
+        start_power_test(serial_port, logs, hub_id, id_dev_arr)
+        wait_hts_power_test_status(serial_port, logs, hub_id, id_dev_arr)
         state_test(serial_port, logs, id_dev_arr)
 
         # Test 4 === Test stop KZ
@@ -198,8 +221,8 @@ def main():
             if keyboard.is_pressed('enter'):
                 break
 
-        start_power_test(serial_port, logs, HUB_ID, id_dev_arr)
-        wait_hts_power_test_status(serial_port, logs, HUB_ID, id_dev_arr)
+        start_power_test(serial_port, logs, hub_id, id_dev_arr)
+        wait_hts_power_test_status(serial_port, logs, hub_id, id_dev_arr)
         state_test(serial_port, logs, id_dev_arr)
         logs.close()
     serial_port.close()

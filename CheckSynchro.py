@@ -1,10 +1,11 @@
-#!/usr/bin/sudo python3.9
+#!/usr/bin/sudo python3.10
+
 import re
-import datetime
-import serial
-import sys
-import colorama
 import os
+import sys
+import serial
+import colorama
+import datetime
 import keyboard
 
 
@@ -25,7 +26,7 @@ def read_serial_port(serial_port, logs):
 def check_delete_dev(line, id_dev_arr, frame, os_system):
     if "05 DEV_REG 05 050635 05" in line:
         line_parts = line.split(" ")
-        dev_id = line_parts[16][2:]
+        dev_id = line_parts[15][2:]
         for idx, element in enumerate(id_dev_arr):
             if dev_id in id_dev_arr[idx]:
                 id_dev_arr.pop(idx)
@@ -37,7 +38,7 @@ def check_add_new_dev(line, id_dev_arr, frame, os_system):
     if "CMD=14" in line:
         line_parts = line.split(";")
         id_dev = line_parts[3]
-        dev_data = [id_dev, "CMD[20] = NO", 0, 0, 0, 0]
+        dev_data = [id_dev, colorama.Fore.RED + "CMD[20] = NO" + colorama.Fore.RESET, 0, 0, 0, 0]
         id_dev_arr.append(dev_data)
         clear_screen(os_system)
         show_statistic(id_dev_arr, frame)
@@ -66,7 +67,7 @@ def check_change_frame(line, hub_id):
     write_param = "WRITE_PARAM 21 0521 05" + str(hub_id) + " 0538"
     if write_param in line:
         sub_line = line.split(" ")
-        frame = sub_line[18][2:]
+        frame = sub_line[17][2:]
         print(colorama.Fore.GREEN + "Фрейм: " + str(int(frame, 16)) + colorama.Fore.RESET)
         return int(frame, 16)
     else:
@@ -153,7 +154,7 @@ def set_os_port_path(port, UART_SPEED):
         file_name = "\CheckSynchro_" + datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S") + ".txt"
 
     try:
-        os.makedirs(path)
+        os.makedirs(path, 0o777)
     except OSError as error:
         if "[WinError 183]" in str(error):
             print(f"Каталог {path} уже существует")
@@ -164,7 +165,7 @@ def main():
     port = input("Введите номер порта: ")
     serial_port, path, system, file_name = set_os_port_path(port, 115200)
 
-    with open(path + file_name, 'w') as logs:
+    with open(path + file_name, 'w', 0o777) as logs:
         hub_id, id_dev_arr = get_hub_dev_id(serial_port, logs)
         frame = 0
 
