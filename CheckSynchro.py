@@ -144,25 +144,27 @@ def set_os_port_path(port, UART_SPEED):
         serial_port = serial.Serial("/dev/ttyUSB" + port, UART_SPEED)
         path_line = os.getcwd().split("/")
         path = "/" + str(path_line[1]) + "/" + str(path_line[2]) + "/Log"
+        file_name = "/CheckSynchro_" + datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S") + ".txt"
 
     elif system == "win32":
         serial_port = serial.Serial("COM" + port, UART_SPEED)
         path_line = os.getcwd().split("\\")
         path = path_line[0] + "\\Log"
+        file_name = "\CheckSynchro_" + datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S") + ".txt"
 
     try:
         os.makedirs(path)
     except OSError as error:
         if "[WinError 183]" in str(error):
             print(f"Каталог {path} уже существует")
-    return serial_port, path, system
+    return serial_port, path, system, file_name
 
 
 def main():
     port = input("Введите номер порта: ")
-    serial_port, path, system = set_os_port_path(port, 115200)
+    serial_port, path, system, file_name = set_os_port_path(port, 115200)
 
-    with open(path + "\CheckSynchro_" + datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S") + ".txt", 'w') as logs:
+    with open(path + file_name, 'w') as logs:
         hub_id, id_dev_arr = get_hub_dev_id(serial_port, logs)
         frame = 0
 
