@@ -27,11 +27,7 @@ class SerialDataRead:
         return self.__port, self.__speed, self.__path, self.__name_log_file
 
     def auto_log(self, flag: bool):
-        # why not just self.__auto_log = bool(flag)
-        if flag:
-            self.__auto_log = True
-        if not flag:
-            self.__auto_log = False
+        self.__auto_log = flag
 
     def set_serial_port(self, port, speed: int):
         self.__serial_port = serial.Serial("/dev/ttyUSB" + str(port), speed)
@@ -40,10 +36,7 @@ class SerialDataRead:
         self.__create_log_file()
 
     def print_console(self, flag: bool):
-        if flag:
-            self.__print_console = True
-        else:
-            self.__print_console = False
+        self.__print_console = flag
 
     def read_serial_data(self):
         def anti_esc(line):
