@@ -1,30 +1,16 @@
 #!/usr/bin/sudo python3.10
-
 import re
 import os
 import sys
 import time
 import serial
 import datetime
+import colorama
+
+added_dev_list = []
 
 
-dev_list = []
-
-
-def save_log(serialport, fname, path):
-    with open(path + fname, 'w') as logs:  # если для винды, то (r'path')
-        finish_scan = "Finish SCAN"
-
-        while True:
-            line = read_serial_data(serialport, logs)
-            if finish_scan in line:
-                time.sleep(3)
-                show_devices(serialport, logs)
-                break
-        logs.close()
-
-
-def show_devices(serialport, logs):
+def show_devices(serialport, logs, list):
     serialport.write("show\r\n".encode("UTF-8"))  # вывести девайсы на хабе
     while read_serial_data(serialport, logs).split(" ")[0] not in {"Hub", "User", "Room", "Device"}:
         pass
@@ -33,25 +19,56 @@ def show_devices(serialport, logs):
         console_line = read_serial_data(serialport, logs)
         if "Device" in console_line:
             _, dev_type, dev_id, *_ = console_line.split(" ")
-            dev_list.append((dev_type, dev_id))
+            list.append((dev_type, dev_id))
         else:
             if console_line.split(" ")[0] not in {"Hub", "User", "Room", "Device"}:
                 break
 
 
-def add_device(serialport, fname, dev_type, path):
-    with open(path + fname, 'a') as logs:
+def add_device(serialport, logs, added_list, type):    # added_list - список с устройствами на хабе до скана; scan_list - список после скана
+    scan_list = []
+    finish_scan = "Finish SCAN"
+    while True: # отслеживание конца сканирования
+        line = read_serial_data(serialport, logs)
+        if finish_scan in line:
+            break
 
-        # serialport.write("jwl3 add {} {}" .format(dev_list[0][0], dev_list[0][1]))
-        for dev in dev_list:
-            if dev_type == "FF" or dev[0] == dev_type:
-                serialport.write(f"jwl3 add {dev[0]} {dev[1]}\r\n".encode("UTF-8"))
+    show_devices(serialport, logs, scan_list)   # получаем список устройств после скана
 
-                while True:
-                    console_line = read_serial_data(serialport, logs)
-                    if f"{dev[1]};CMD=20;" in console_line:
-                        break
-        logs.close()
+    for i in scan_list: # удаляем повторы
+        for a in added_list:
+            if i == a:
+                scan_list.remove(a)
+
+    # serialport.write("jwl3 add {} {}" .format(dev_list[0][0], dev_list[0][1]))
+    for dev in scan_list:
+        if type == "FF" or dev[0] == type:
+            serialport.write(f"jwl3 add {dev[0]} {dev[1]}\r\n".encode("UTF-8"))
+
+            while True:
+                console_line = read_serial_data(serialport, logs)
+                if f"{dev[1]};CMD=20;" in console_line:
+                    break
+
+                if f"Registration finished for {dev[1]} with result = 1" in console_line:
+                    print(colorama.Fore.RED + f"Registration {dev[1]} is FALSE" + colorama.Fore.RESET)
+                    break
+
+
+def set_os_port(port, uart_speed):
+    if sys.platform == "linux" or sys.platform == "linux2":
+        serialport = serial.Serial("/dev/ttyUSB" + port, uart_speed)
+    elif sys.platform == "win32":
+        serialport = serial.Serial("COM" + port, uart_speed)
+    return serialport
+
+
+def set_os_path():
+    path_line = os.getcwd().split("/")
+    path = '/' + str(path_line[1]) + '/' + str(path_line[2]) + '/Log/'
+    if not (os.path.isdir(path)):
+        os.makedirs(path, 0o777)
+    return path
 
 
 def read_serial_data(serialport, logs):  # чтение UART и запись в лог файл
@@ -68,34 +85,14 @@ def anti_esc(line):  # фильтр "мусора"
     return line
 
 
-def set_os_port_path(port, UART_SPEED):
-    system = sys.platform
-    if (system == "linux") or (system == "linux2"):
-
-        serial_port = serial.Serial("/dev/ttyUSB" + port, UART_SPEED)
-        path_line = os.getcwd().split("/")
-        path = "/" + str(path_line[1]) + "/" + str(path_line[2]) + "/Log"
-        file_name = "/FibraScan_" + datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S") + ".txt"
-
-    elif system == "win32":
-        serial_port = serial.Serial("COM" + port, UART_SPEED)
-        path_line = os.getcwd().split("\\")
-        path = path_line[0] + "\\Log"
-        file_name = "\FibraScan_" + datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S") + ".txt"
-
-    try:
-        os.makedirs(path)
-    except OSError as error:
-        if "[WinError 183]" in str(error):
-            print(f"Каталог {path} уже существует")
-    return serial_port, path, system, file_name
-
-
 def main():
     uart_speed = 115200
 
     port = input("Введите номер порта: ")
-    serial_port, path, system, file_name = set_os_port_path(port, uart_speed)
+    path = set_os_path()
+    serialport = set_os_port(port, uart_speed)
+
+    fname = input('введите имя файла логгирования: ')
 
     print('введите тип девайса FIBRA для добавления.')
     dev_type = input('для добавления всех отсканеных девайсов ввести FF: ')
@@ -103,17 +100,21 @@ def main():
     if dev_type not in {"61", "62", "64", "68", "6A", "6D", "6E", "6F", "74", "75", "7C", "FF"}:
         raise "Incorrect device type! Try again"
     else:
-        serial_port.write("log j* 5\r\n".encode("UTF-8"))
-        serial_port.write("fibra reset\r\n".encode("UTF-8"))  # контрольный сброс сканирования
-        time.sleep(1)
-        serial_port.write("fibra scan\r\n".encode("UTF-8"))  # начать сканировиние шин
+        with open(path + fname + '.txt', 'w') as logs:  # если для винды, то (r'path')
 
-        save_log(serial_port, file_name, path)
+            serialport.write("log j* 5\r\n".encode("UTF-8"))
 
-        add_device(serial_port, file_name, dev_type, path)
+            show_devices(serialport, logs, added_dev_list)  # показать девайсы что уже есть на хабе и запомнить их
 
-        serial_port.write("fibra reset\r\n".encode("UTF-8"))  # начать сканировиние шин
-        serial_port.close()
+            serialport.write("fibra reset\r\n".encode("UTF-8"))  # контрольный сброс сканирования
+            time.sleep(1)
+            serialport.write("fibra scan\r\n".encode("UTF-8"))  # начать сканирование шин
+
+            add_device(serialport, logs, added_dev_list, dev_type)
+
+            serialport.write("fibra reset\r\n".encode("UTF-8"))  # начать сканирование шин
+            logs.close()
+        serialport.close()
 
 
 if __name__ == '__main__':
