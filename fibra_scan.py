@@ -75,7 +75,7 @@ def main():
     if dev_type not in {"61", "62", "64", "68", "6A", "6D", "6E", "6F", "74", "75", "7C", "FF"}:
         raise "Incorrect device type! Try again"
     else:
-        hub.crete_log_file(f"fibra scan {datetime.now()}")
+        hub.crete_log_file(f"FibraScan {datetime.now()}")
         print(hub.get_path_log_file(), hub.get_name_log_file())
         hub.write_serial("log j* 5")
         hub.set_print_data(True)
