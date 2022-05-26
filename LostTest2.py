@@ -27,25 +27,25 @@ def gsm_on(obj: Hub):
 
 def relay_on(obj: Hub, relay_id):
     obj.write_serial("jwl3 ws %s 1" % relay_id)
-    waiter(obj, relay_id)
+    wait(obj, relay_id)
 
 
 def relay_off(obj: Hub, relay_id):
     obj.write_serial("jwl3 ws %s 2" % relay_id)
-    waiter(obj, relay_id)
+    wait(obj, relay_id)
 
 
 def socket_on(obj: Hub, socket_id):
     obj.write_serial("jwl3 ws %s 1" % socket_id)
-    waiter(obj, socket_id)
+    wait(obj, socket_id)
 
 
 def socket_off(obj: Hub, socket_id):
     obj.write_serial("jwl3 ws %s 2" % socket_id)
-    waiter(obj, socket_id)
+    wait(obj, socket_id)
 
 
-def waiter(obj: Hub, id):                                          # wait some time after commutation
+def wait(obj: Hub, id):                                          # wait some time after commutation
     time_send_command = None
     while True:
         line = obj.read_serial()
