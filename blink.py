@@ -60,11 +60,10 @@ def blink_dev(obj: Hub, dev_id_list, flag):
 
 def main():
     hub = Hub()
-    print(hub.os_system)
     port = input("Ведите номер порта: ")
     hub.set_serial_port(port, 115200)
-
     hub.crete_log_file(f"Blink {datetime.now()}")
+    print(hub.get_path_log_file(), hub.get_name_log_file())
 
     fibra_scan(hub)
     dev_id_list = show_dev(hub)
