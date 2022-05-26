@@ -1,5 +1,5 @@
 from sys import platform
-from os import getlogin, getcwd
+from os import getlogin, getcwd, system
 from datetime import datetime
 from pathlib import Path
 from os import chown, chmod
@@ -11,6 +11,12 @@ class Logging(object):
         self.__path = None
         self.__name_log_file = None
         self.os_system = platform
+
+    def clear_console(self):
+        if self.os_system in {"linux", "linux2"}:
+            system('clear')
+        if self.os_system == "win32":
+            system('cls')
 
     def get_name_log_file(self):
         return self.__name_log_file
