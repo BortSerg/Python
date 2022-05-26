@@ -45,7 +45,7 @@ def socket_off(obj: Hub, socket_id):
     waiter(obj, socket_id)
 
 
-def waiter(obj: Hub, id):
+def waiter(obj: Hub, id):                                          # wait some time after commutation
     time_send_command = None
     while True:
         line = obj.read_serial()
@@ -55,7 +55,7 @@ def waiter(obj: Hub, id):
             break
 
 
-def selector():
+def selector():                                                     # test parts selector
     while True:
         sel1 = int(input("\nКакие тесты проводить? \n1. 220В/АКБ/LOW_AKB/Charge \n2. АКБ/LOW_AKB/Charge \n3. LOW_AKB/Charge \n4. Charge \t\t"))
         if (sel1 >= 1) and (sel1 < 5):
@@ -67,7 +67,7 @@ def selector():
     return sel1, sel2
 
 
-def test_mode():
+def test_mode():                                                    # test mode selector (auto/manual)
     while True:
         mode = int(input("\n1. Авто режим теста \n2. Ручной режим: \t\t"))
         if mode == 1 or mode == 2:
@@ -75,12 +75,12 @@ def test_mode():
     return mode
 
 
-def cable_distance():
+def cable_distance():       # enter cable distance
     distance = str(input("\nДлина кабеля: \t\t"))
     return distance
 
 
-def cable_type():
+def cable_type():                                                   # select cable type
     while True:
         type = input("\nТип кабеля:\n1. Alarm\n2. UTP \t\t")
         if type == "1":
@@ -92,14 +92,14 @@ def cable_type():
     return type_cable
 
 
-def clear_screen(os_system):
+def clear_screen(os_system):                                        # clear console screen
     if str(os_system) in {'linux2', 'linux'}:
         system('clear')
     if os_system == 'win32':
         system('cls')
 
 
-def wait_enter():
+def wait_enter():                                                   # wait press enter
     while True:
         if is_pressed('enter'):
             break
@@ -349,24 +349,24 @@ def main():
     UART_SPEED = 115200
     hub = Hub()
     port = input("Введите номер порта: ")
-    hub.set_serial_port(port, UART_SPEED)
+    hub.set_serial_port(port, UART_SPEED)                              # set UART port and SPEED for class object
 
     mode = test_mode()
-    get_info(hub, mode)
+    get_info(hub, mode)                                                # checking for devices on the hub if automatic test mode is selected
 
     sel1, sel2 = selector()
     distance = cable_distance()
     type_cable = cable_type()
 
-    print_test_info(hub, type_cable, distance, mode)
+    print_test_info(hub, type_cable, distance, mode)                    # console print some parameters test and devises in the hub
 
     match sel1:
         case 1:
-            _220V_test(hub, mode, sel2, distance, type_cable)
+            _220V_test(hub, mode, sel2, distance, type_cable)           # 220V Test
             sel2 = 1
-            _AKB_test(hub, mode, sel2, distance, type_cable)  # Normal AKB Tests
-            _LOW_AKB_test(hub, mode, sel2, distance, type_cable)  # LOW AKB Tests
-            _Charge_AKB_test(hub, mode, sel2, distance, type_cable)  # Charge AKB Tests
+            _AKB_test(hub, mode, sel2, distance, type_cable)            # Normal AKB Tests
+            _LOW_AKB_test(hub, mode, sel2, distance, type_cable)        # LOW AKB Tests
+            _Charge_AKB_test(hub, mode, sel2, distance, type_cable)     # Charge AKB Tests
 
         case 2:
             _AKB_test(hub, mode, sel2, distance, type_cable)
