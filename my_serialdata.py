@@ -13,6 +13,9 @@ class SerialData(Logging):
         self.__autolog = True
         self.__print_data = False
 
+    def close_port(self):
+        self.__serial_port.close()
+
     def set_autolog(self, flag: bool):
         self.__autolog = flag
 
