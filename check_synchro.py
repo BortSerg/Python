@@ -167,7 +167,7 @@ def main():
     hub = Hub()
     port = input("Ведите номер порта: ")
     hub.set_serial_port(port, 115200)
-    hub.crete_log_file(f"CheckSynchro {datetime.now()}")
+    hub.crete_log_file(f"CheckSynchro {datetime.now().strftime('%Y-%m-%d %H-%M-%S')}")
     dev_list_status = get_id_dev_on_hub(hub)
 
     while True:
@@ -184,8 +184,8 @@ def main():
         check_delete_dev(hub, line, dev_list_status)
         check_end_scan_period(hub, line, dev_list_status)
 
-        #if is_pressed('ctrl+z'):
-         #   break
+        if is_pressed('ctrl+z'):
+            break
 
     hub.close_port()
 
