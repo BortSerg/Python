@@ -121,7 +121,7 @@ def get_info(obj: Hub, mode):
             hub_name = ""
             for i in line_parts[6:]:
                 hub_name += i
-            obj.hub_name = hub_name[:-1]
+            obj.hub_name = hub_name[:-2]    # delete \r\n in end line
             obj.hub_id = line_parts[5]
 
         if mode == 1:
@@ -178,7 +178,7 @@ def start_test(obj: Hub, distance, type_cable, name_test):
     obj.crete_log_file(f"{type_cable} {distance} {obj.hub_name} {obj.hub_id} {name_test}_USB{obj.get_port()}.txt")
 
     time_start = int(time())
-    print(Fore.CYAN + f"Start time {type_cable} {name_test} {str(datetime.now())}")
+    print(Fore.CYAN + f"Start time {type_cable} {name_test} {datetime.now().strftime('%Y-%m-%d %H-%M-%S')}")
     obj.write_serial("show")
     for i in tqdm(range(0, 60), desc=Fore.RED + f"Progress {name_test}"):
         while True:
@@ -187,7 +187,7 @@ def start_test(obj: Hub, distance, type_cable, name_test):
             if abs(time_now - time_start) > 60:
                 time_start = time_now
                 break
-    print(Fore.GREEN + f"\rTest {name_test} Finish at {str(datetime.now())}" + Fore.RESET + "\n")
+    print(Fore.GREEN + f"\rTest {name_test} Finish at {datetime.now().strftime('%Y-%m-%d %H-%M-%S')}" + Fore.RESET + "\n")
 
 
 def _220V_test(obj: Hub, mode, sel2, distance, type_cable):
