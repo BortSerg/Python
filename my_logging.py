@@ -33,7 +33,7 @@ class Logging(object):
         if self.os_system in {'linux', 'linux2'}:
             path = f"/home/{getlogin()}/Log/"
             if name is None:
-                file_name = f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}.txt"
+                file_name = f"{datetime.now().strftime('%Y-%m-%d %H-%M-%S')}.txt"
             else:
                 file_name = name
 
