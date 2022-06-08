@@ -47,12 +47,14 @@ def socket_off(obj: Hub, socket_id):
 
 def wait(obj: Hub, id):                                          # wait some time after commutation
     time_send_command = None
+    obj.set_autolog(False)
     while True:
         line = obj.read_serial()
         if f"{id};CMD=105" in line:
             time_send_command = int(time())
         if time_send_command is not None and int(time() - time_send_command) > 5:
             break
+    obj.set_autolog(True)
 
 
 def selector():                                                     # test parts selector
