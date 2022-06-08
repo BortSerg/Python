@@ -27,7 +27,7 @@ def get_id_dev_on_hub(obj: Hub):
             obj.hub_id = line_parts[2]                      # 5й элемент строки это ID хаба
 
         if "Device" in line:
-            dev_id = line_parts[2][2:] if line_parts[2][:2] == "00" else dev_id = line_parts[2]
+            dev_id = line_parts[2][2:] if line_parts[2][:2] == "00" else line_parts[2]
             type_dev = line_parts[1]
             dev_list_status.append([dev_id, Fore.RED + "CMD[20]" + Fore.RESET, 0, 0, 0, 0])  # добавляем в список состояния
             default_name_dev = f"{dev_id}{type_dev}0001"
