@@ -137,7 +137,7 @@ def main():
     hub = Hub()
     port = input('Введите номер порта: \r\n')
     hub.set_serial_port(port, 115200)                       # параметры порта для объекта класса
-    hub.crete_log_file(f"PowerTest {datetime.now()}")       # создание файла для логирования
+    hub.crete_log_file(f"PowerTest {datetime.now().strftime('%Y-%m-%d %H-%M-%S')}")       # создание файла для логирования
     #hub.set_print_data(True)                                # вывод данных в консоль
     hub_id, id_dev_arr = get_hub_dev_id(hub)                # получение ID хаба и списка девайсов на хабе
     hub.clear_console()                                     # очистка экрана консоли

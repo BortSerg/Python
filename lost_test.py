@@ -370,25 +370,25 @@ def main():
     print_test_info(hub, type_cable, distance, mode)                    # console print some parameters test and devises in the hub
 
     if sel1 == 1:
-            _220V_test(hub, mode, sel2, distance, type_cable)           # 220V Test
-            sel2 = 1
-            _AKB_test(hub, mode, sel2, distance, type_cable)            # Normal AKB Tests
-            _LOW_AKB_test(hub, mode, sel2, distance, type_cable)        # LOW AKB Tests
-            _Charge_AKB_test(hub, mode, sel2, distance, type_cable)     # Charge AKB Tests
+        _220V_test(hub, mode, sel2, distance, type_cable)           # 220V Test
+        sel2 = 1
+        _AKB_test(hub, mode, sel2, distance, type_cable)            # Normal AKB Tests
+        _LOW_AKB_test(hub, mode, sel2, distance, type_cable)        # LOW AKB Tests
+        _Charge_AKB_test(hub, mode, sel2, distance, type_cable)     # Charge AKB Tests
 
     if sel1 == 2:
-            _AKB_test(hub, mode, sel2, distance, type_cable)
-            sel2 = 1
-            _LOW_AKB_test(hub, mode, sel2, distance, type_cable)
-            _Charge_AKB_test(hub, mode, sel2, distance, type_cable)
+        _AKB_test(hub, mode, sel2, distance, type_cable)
+        sel2 = 1
+        _LOW_AKB_test(hub, mode, sel2, distance, type_cable)
+        _Charge_AKB_test(hub, mode, sel2, distance, type_cable)
 
     if sel1 == 3:
-            _LOW_AKB_test(hub, mode, sel2, distance, type_cable)
-            sel2 = 1
-            _Charge_AKB_test(hub, mode, sel2, distance, type_cable)
+        _LOW_AKB_test(hub, mode, sel2, distance, type_cable)
+        sel2 = 1
+        _Charge_AKB_test(hub, mode, sel2, distance, type_cable)
 
-    if sel1 == 3:
-            _Charge_AKB_test(hub, mode, sel2, distance, type_cable)
+    if sel1 == 4:
+        _Charge_AKB_test(hub, mode, sel2, distance, type_cable)
 
 
 if __name__ == '__main__':

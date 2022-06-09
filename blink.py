@@ -62,7 +62,7 @@ def main():
     hub = Hub()
     port = input("Ведите номер порта: ")
     hub.set_serial_port(port, 115200)
-    hub.crete_log_file(f"Blink {datetime.now()}")
+    hub.crete_log_file(f"Blink {datetime.now().strftime('%Y-%m-%d %H-%M-%S')}")
     print(hub.get_path_log_file(), hub.get_name_log_file())
 
     fibra_scan(hub)
