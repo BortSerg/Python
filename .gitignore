@@ -1,0 +1,2 @@
+# ignore all spec files after PyInstaller
+*.spec
