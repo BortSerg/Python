@@ -1,4 +1,4 @@
-#!/usr/bin/sudo python3.10
+#!/usr/bin/sudo python3
 
 from my_serialdata import Hub
 from colorama import Fore
@@ -200,32 +200,34 @@ def _220V_test(obj: Hub, mode, sel2, distance, type_cable):
         socket_on(obj, obj.socket_id)
         relay_off(obj, obj.relay_norm_id)
         relay_off(obj, obj.relay_low_id)
-    match sel2:
-        case 1:
-            # GSM Only
-            gsm_on(obj)
-            eth_off(obj)
-            start_test(obj, distance, type_cable, "220V_GSM")
 
-            # GSM + ETH
-            eth_on(obj)
-            start_test(obj, distance, type_cable, "220V_GSM+ETH")
+    if sel2 == 1:
+        # GSM Only
+        gsm_on(obj)
+        eth_off(obj)
+        start_test(obj, distance, type_cable, "220V_GSM")
 
-            # ETH Only
-            gsm_off(obj)
-            start_test(obj, distance, type_cable, "220V_ETH")
-        case 2:
-            # GSM + ETH
-            eth_on(obj)
-            start_test(obj, distance, type_cable, "220V_GSM+ETH")
+        # GSM + ETH
+        eth_on(obj)
+        start_test(obj, distance, type_cable, "220V_GSM+ETH")
 
-            # ETH Only
-            gsm_off(obj)
-            start_test(obj, distance, type_cable, "220V_ETH")
-        case 3:
-            # ETH Only
-            gsm_off(obj)
-            start_test(obj, distance, type_cable, "220V_ETH")
+        # ETH Only
+        gsm_off(obj)
+        start_test(obj, distance, type_cable, "220V_ETH")
+
+    if sel2 == 2:
+        # GSM + ETH
+        eth_on(obj)
+        start_test(obj, distance, type_cable, "220V_GSM+ETH")
+
+        # ETH Only
+        gsm_off(obj)
+        start_test(obj, distance, type_cable, "220V_ETH")
+
+    if sel2 == 3:
+        # ETH Only
+        gsm_off(obj)
+        start_test(obj, distance, type_cable, "220V_ETH")
 
 
 def _AKB_test(obj: Hub, mode, sel2, distance, type_cable):
@@ -237,32 +239,34 @@ def _AKB_test(obj: Hub, mode, sel2, distance, type_cable):
     elif mode == 1:
         relay_on(obj, obj.relay_norm_id)
         socket_off(obj, obj.socket_id)
-    match sel2:
-        case 1:
-            # GSM Only
-            gsm_on(obj)
-            eth_off(obj)
-            start_test(obj, distance, type_cable, "AKB_GSM")
 
-            # GSM + ETH
-            eth_on(obj)
-            start_test(obj, distance, type_cable, "AKB_GSM+ETH")
+    if sel2 == 1:
+        # GSM Only
+        gsm_on(obj)
+        eth_off(obj)
+        start_test(obj, distance, type_cable, "AKB_GSM")
 
-            # ETH Only
-            gsm_off(obj)
-            start_test(obj, distance, type_cable, "AKB_ETH")
-        case 2:
-            # GSM + ETH
-            eth_on(obj)
-            start_test(obj, distance, type_cable, "AKB_GSM+ETH")
+        # GSM + ETH
+        eth_on(obj)
+        start_test(obj, distance, type_cable, "AKB_GSM+ETH")
 
-            # ETH Only
-            gsm_off(obj)
-            start_test(obj, distance, type_cable, "AKB_ETH")
-        case 3:
-            # ETH Only
-            gsm_off(obj)
-            start_test(obj, distance, type_cable, "AKB_ETH")
+        # ETH Only
+        gsm_off(obj)
+        start_test(obj, distance, type_cable, "AKB_ETH")
+
+    if sel2 == 2:
+        # GSM + ETH
+        eth_on(obj)
+        start_test(obj, distance, type_cable, "AKB_GSM+ETH")
+
+        # ETH Only
+        gsm_off(obj)
+        start_test(obj, distance, type_cable, "AKB_ETH")
+
+    if sel2 == 3:
+        # ETH Only
+        gsm_off(obj)
+        start_test(obj, distance, type_cable, "AKB_ETH")
 
 
 def _LOW_AKB_test(obj: Hub, mode, sel2, distance, type_cable):
@@ -278,32 +282,33 @@ def _LOW_AKB_test(obj: Hub, mode, sel2, distance, type_cable):
         relay_on(obj, obj.relay_low_id)
         socket_off(obj, obj.socket_id)
 
-    match sel2:
-        case 1:
-            # GSM Only
-            gsm_on(obj)
-            eth_off(obj)
-            start_test(obj, distance, type_cable, "LOW_AKB_GSM")
+    if sel2 == 1:
+        # GSM Only
+        gsm_on(obj)
+        eth_off(obj)
+        start_test(obj, distance, type_cable, "LOW_AKB_GSM")
 
-            # GSM + ETH
-            eth_on(obj)
-            start_test(obj, distance, type_cable, "LOW_AKB_GSM+ETH")
+        # GSM + ETH
+        eth_on(obj)
+        start_test(obj, distance, type_cable, "LOW_AKB_GSM+ETH")
 
-            # ETH Only
-            gsm_off(obj)
-            start_test(obj, distance, type_cable, "LOW_AKB_ETH")
-        case 2:
-            # GSM + ETH
-            eth_on(obj)
-            start_test(obj, distance, type_cable, "LOW_AKB_GSM+ETH")
+        # ETH Only
+        gsm_off(obj)
+        start_test(obj, distance, type_cable, "LOW_AKB_ETH")
 
-            # ETH Only
-            gsm_off(obj)
-            start_test(obj, distance, type_cable, "LOW_AKB_ETH")
-        case 3:
-            # ETH Only
-            gsm_off(obj)
-            start_test(obj, distance, type_cable, "LOW_AKB_ETH")
+    if sel2 == 2:
+        # GSM + ETH
+        eth_on(obj)
+        start_test(obj, distance, type_cable, "LOW_AKB_GSM+ETH")
+
+        # ETH Only
+        gsm_off(obj)
+        start_test(obj, distance, type_cable, "LOW_AKB_ETH")
+
+    if sel2 == 3:
+        # ETH Only
+        gsm_off(obj)
+        start_test(obj, distance, type_cable, "LOW_AKB_ETH")
 
 
 def _Charge_AKB_test(obj: Hub, mode, sel2, distance, type_cable):
@@ -313,8 +318,8 @@ def _Charge_AKB_test(obj: Hub, mode, sel2, distance, type_cable):
         wait_enter()
     elif mode == 1:
         socket_on(obj, obj.socket_id)
-    match sel2:
-        case 1:
+
+    if sel2 == 1:
             # GSM Only
             gsm_on(obj)
             eth_off(obj)
@@ -327,7 +332,8 @@ def _Charge_AKB_test(obj: Hub, mode, sel2, distance, type_cable):
             # ETH Only
             gsm_off(obj)
             start_test(obj, distance, type_cable, "Charge_AKB_ETH")
-        case 2:
+
+    if sel2 == 2:
             # GSM + ETH
             eth_on(obj)
             start_test(obj, distance, type_cable, "Charge_AKB_GSM+ETH")
@@ -335,7 +341,8 @@ def _Charge_AKB_test(obj: Hub, mode, sel2, distance, type_cable):
             # ETH Only
             gsm_off(obj)
             start_test(obj, distance, type_cable, "Charge_AKB_ETH")
-        case 3:
+
+    if sel2 == 3:
             # ETH Only
             gsm_off(obj)
             start_test(obj, distance, type_cable, "Charge_AKB_ETH")
@@ -362,26 +369,25 @@ def main():
 
     print_test_info(hub, type_cable, distance, mode)                    # console print some parameters test and devises in the hub
 
-    match sel1:
-        case 1:
+    if sel1 == 1:
             _220V_test(hub, mode, sel2, distance, type_cable)           # 220V Test
             sel2 = 1
             _AKB_test(hub, mode, sel2, distance, type_cable)            # Normal AKB Tests
             _LOW_AKB_test(hub, mode, sel2, distance, type_cable)        # LOW AKB Tests
             _Charge_AKB_test(hub, mode, sel2, distance, type_cable)     # Charge AKB Tests
 
-        case 2:
+    if sel1 == 2:
             _AKB_test(hub, mode, sel2, distance, type_cable)
             sel2 = 1
             _LOW_AKB_test(hub, mode, sel2, distance, type_cable)
             _Charge_AKB_test(hub, mode, sel2, distance, type_cable)
 
-        case 3:
+    if sel1 == 3:
             _LOW_AKB_test(hub, mode, sel2, distance, type_cable)
             sel2 = 1
             _Charge_AKB_test(hub, mode, sel2, distance, type_cable)
 
-        case 4:
+    if sel1 == 3:
             _Charge_AKB_test(hub, mode, sel2, distance, type_cable)
 
 
