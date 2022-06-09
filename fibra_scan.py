@@ -1,4 +1,4 @@
-#!/usr/bin/sudo python3.10
+#!/usr/bin/sudo python3
 
 from my_serialdata import SerialData, Hub
 from my_logging import Logging

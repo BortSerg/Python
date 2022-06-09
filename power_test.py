@@ -1,4 +1,4 @@
-#!/usr/bin/sudo python3.10
+#!/usr/bin/sudo python3
 from colorama import Fore
 import keyboard
 from datetime import datetime

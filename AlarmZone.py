@@ -1,4 +1,4 @@
-#!/usr/bin/sudo python3.10
+#!/usr/bin/sudo python3
 import re
 import os
 import sys

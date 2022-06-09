@@ -1,4 +1,4 @@
-#!/usr/bin/sudo python3.10
+#!/usr/bin/sudo python3
 
 from my_serialdata import Hub
 from datetime import datetime
