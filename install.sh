@@ -1,4 +1,6 @@
 #!/bin/bash
+
+# Скрипт установки Python 3.10.4 и доп модулей используемых у скриптах
 wget https://www.python.org/ftp/python/3.10.4/Python-3.10.4.tgz
 sudo apt-get update
 sudo apt-get upgrade

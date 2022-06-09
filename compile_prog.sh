@@ -1,4 +1,6 @@
 #!/bin/bash
+
+#Скрипт для компиляции скриптов *.py в бинарный файл для работы в Linux и скрития кода программы
 #python3 -m PyInstaller --onefile --name "alarm_zone" alarm_zone.py
 python3 -m PyInstaller --onefile --name "blink" blink.py
 python3 -m PyInstaller --onefile --name "check_synchro" check_synchro.py
