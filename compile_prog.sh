@@ -17,7 +17,7 @@ if [[ $NAME == *"21.10"* ]]; then
 fi
 
 if [[ $NAME == *"20.04"* ]]; then
-  DIR_NAME='Ubuntu 18.04'
+  DIR_NAME='Ubuntu 20.04'
 fi
 
 if [[ $NAME == *"18.04"* ]]; then
