@@ -7,8 +7,6 @@ cd "$DIR"
 rm -r build/
 rm *.spec
 
-NAME=$(uname -v)
-
 NAME="$(lsb_release "-r")"
 echo $NAME
 

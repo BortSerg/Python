@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Скрипт установки Python 3.10.4 и доп модулей используемых у скриптах
+cd $HOME
 wget https://www.python.org/ftp/python/3.10.4/Python-3.10.4.tgz
 sudo apt-get update
 sudo apt-get upgrade
@@ -12,16 +13,18 @@ make -j 8
 sudo make altinstall
 
 sudo apt install python3-pip
-sudo python3 -m pip install --upgrade pip
-sudo python3.10 -m pip install --upgrade pip
+python3 -m pip install --upgrade pip
+python3 -m pip install PyInstaller
+python3.10 -m pip install --upgrade pip
+python3.10 -m pip install PyInstaller
 
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.local/lib:$PATH"
 
 sudo apt-get update -y
-sudo python3 -m pip install pyserial tqdm colorama keyboard
-sudo python3.10 -m pip install pyserial tqdm colorama keyboard
 
+python3 -m pip install pyserial tqdm colorama keyboard
+python3.10 -m pip install pyserial tqdm colorama keyboard
 
 
 
