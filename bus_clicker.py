@@ -6,10 +6,13 @@ from time import time
 def main():
     port = input("port: ")
     hub = Logging(port, 115200)
+    time_pause = input("cycle time (sec): ")
+    if time_pause == "":
+        print("cycle time default set 20 sec")
+        time_pause = 20
     hub.prefix_name_log_file = "devcom 1e"
     hub.print_data = True
     time_start = int(time())
-    time_pause = 20
     flag = True
 
     while True:
