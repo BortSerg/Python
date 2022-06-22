@@ -1,29 +1,29 @@
 import serial
 import re
-from my_logging import Logging
+from my_hub import Hub
+from sys import platform
+from os import system
 
 
-class SerialData(Logging):
-
+class SerialData(Hub):
     def __init__(self):
-        Logging.__init__(self)
+        Hub.__init__(self)
         self.__port = None
         self.__speed = None
         self.__serial_port = None
         self.__autolog = True
         self.__print_data = False
+        self.os_system = platform
+        self.print_data = False
 
-    def close_port(self):
-        self.__serial_port.close()
-
-    def set_autolog(self, flag: bool):
-        self.__autolog = flag
-
-    def set_print_data(self, flag: bool):
-        self.__print_data = flag
-
-    def get_port(self):
-        return self.__port
+    def clear_console(self):
+        system('clear') if self.os_system in {"linux", "linux2"} else system('cls')
+        """
+        if self.os_system in {"linux", "linux2"}:
+            system('clear')
+        if self.os_system == "win32":
+            system('cls')
+        """
 
     def set_serial_port(self, port, speed: int):
         self.__serial_port = serial.Serial("/dev/ttyUSB" + str(port), speed)
@@ -38,23 +38,14 @@ class SerialData(Logging):
 
         line = self.__serial_port.readline().decode('utf-8')
         line = anti_esc(line)
-        if self.__autolog:
-            self.write_log(line)
-        if self.__print_data:
-            print(line)
+
         return line
 
     def write_serial(self, message: str):
         self.__serial_port.write((message + "\r\n").encode('UTF-8'))
 
+    def close_port(self):
+        self.__serial_port.close()
 
-class Hub(SerialData):
-    def __init__(self):
-        SerialData.__init__(self)
-        self.hub_id = None
-        self.hub_name = None
-        self.frame = 0
-        self.relay_norm_id = None
-        self.relay_low_id = None
-        self.socket_id = None
-        self.id_dev_arr = []
+    def get_port(self):
+        return self.__port
