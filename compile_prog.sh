@@ -30,6 +30,6 @@ python3 -m PyInstaller --clean --onefile --distpath "$DIR_NAME" --name "check_sy
 python3 -m PyInstaller --clean --onefile --distpath "$DIR_NAME" --name "fibra_scan" fibra_scan.py
 python3 -m PyInstaller --clean --onefile --distpath "$DIR_NAME" --name "lost_test" lost_test.py
 python3 -m PyInstaller --clean --onefile --distpath "$DIR_NAME" --name "power_test" power_test.py
-python3 -m PyInstaller --clean --onefile --distpath "$DIR_NAME" --name "scr" scr.py
+python3 -m PyInstaller --clean --onefile --distpath "$DIR_NAME" --name "bus_clicker" bus_clicker.py
 rm -r build/
 rm *.spec
