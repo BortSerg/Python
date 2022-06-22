@@ -1,6 +1,6 @@
 #!/usr/bin/sudo python3
 
-from my_serialdata import Hub
+from my_logging import Logging
 from colorama import Fore
 from os import system
 from keyboard import is_pressed
@@ -9,52 +9,50 @@ from datetime import datetime
 from time import time
 
 
-def eth_off(obj: Hub):
+def eth_off(obj: Logging):
     obj.write_serial("conn eth off")
 
 
-def eth_on(obj: Hub):
+def eth_on(obj: Logging):
     obj.write_serial("conn eth on")
 
 
-def gsm_off(obj: Hub):
+def gsm_off(obj: Logging):
     obj.write_serial("conn gprs off")
 
 
-def gsm_on(obj: Hub):
+def gsm_on(obj: Logging):
     obj.write_serial("conn gprs on")
 
 
-def relay_on(obj: Hub, relay_id):
+def relay_on(obj: Logging, relay_id):
     obj.write_serial("jwl3 ws %s 1" % relay_id)
     wait(obj, relay_id)
 
 
-def relay_off(obj: Hub, relay_id):
+def relay_off(obj: Logging, relay_id):
     obj.write_serial("jwl3 ws %s 2" % relay_id)
     wait(obj, relay_id)
 
 
-def socket_on(obj: Hub, socket_id):
+def socket_on(obj: Logging, socket_id):
     obj.write_serial("jwl3 ws %s 1" % socket_id)
     wait(obj, socket_id)
 
 
-def socket_off(obj: Hub, socket_id):
+def socket_off(obj: Logging, socket_id):
     obj.write_serial("jwl3 ws %s 2" % socket_id)
     wait(obj, socket_id)
 
 
-def wait(obj: Hub, id):                                          # wait some time after commutation
+def wait(obj: Logging, id):                                          # wait some time after commutation
     time_send_command = None
-    obj.set_autolog(False)
     while True:
-        line = obj.read_serial()
+        line = obj.write_log()
         if f"{id};CMD=105" in line:
             time_send_command = int(time())
         if time_send_command is not None and int(time() - time_send_command) > 5:
             break
-    obj.set_autolog(True)
 
 
 def selector():                                                     # test parts selector
@@ -107,17 +105,16 @@ def wait_enter():                                                   # wait press
             break
 
 
-def get_info(obj: Hub, mode):
-    obj.set_autolog(False)
+def get_info(obj: Logging, mode):
     obj.write_serial("show")
     while True:
-        if "show" in obj.read_serial():
+        if "show" in obj.write_log():
             break
 
     exit_flag = False
 
     while True:
-        line = obj.read_serial()
+        line = obj.write_log()
         line_parts = line.split(" ")
         if "Hub" in line:
             hub_name = ""
@@ -143,7 +140,6 @@ def get_info(obj: Hub, mode):
 
         if line_parts[0] not in {"Hub", "User", "Room", "Device"}:
             break
-    obj.set_autolog(True)
     conditions = (obj.socket_id, obj.relay_low_id, obj.relay_norm_id)
     descriptions = [
         "Error socket_id! Please add a socket",
@@ -160,7 +156,7 @@ def get_info(obj: Hub, mode):
         exit(0)
 
 
-def print_test_info(obj: Hub, type_cable, distance, mode):
+def print_test_info(obj: Logging, type_cable, distance, mode):
     clear_screen(obj.os_system)
     print("Path: %s" % obj.get_path_log_file())
     print("HUB: %s %s" % (obj.hub_id, obj.hub_name))
@@ -176,15 +172,19 @@ def print_test_info(obj: Hub, type_cable, distance, mode):
     print("Distance: %s" % distance)
 
 
-def start_test(obj: Hub, distance, type_cable, name_test):
-    obj.crete_log_file(f"{type_cable} {distance} {obj.hub_name} {obj.hub_id} {name_test}_USB{obj.get_port()}.txt")
+def start_test(obj: Logging, distance, type_cable, name_test):
+    obj.time_stamp_in_name_log_file = False
+    obj.hub_info_in_name_log_file = False
+    obj.prefix_name_log_file = f"{type_cable} {distance} {obj.hub_name} {obj.hub_id} {name_test}_USB{obj.get_port()}"
+
+    obj.crete_log_file()
 
     time_start = int(time())
     print(Fore.CYAN + f"Start time {type_cable} {name_test} {datetime.now().strftime('%Y-%m-%d %H-%M-%S')}")
     obj.write_serial("show")
     for i in tqdm(range(0, 60), desc=Fore.RED + f"Progress {name_test}"):
         while True:
-            line = obj.read_serial()
+            line = obj.write_log()
             time_now = int(time())
             if abs(time_now - time_start) > 60:
                 time_start = time_now
@@ -192,7 +192,7 @@ def start_test(obj: Hub, distance, type_cable, name_test):
     print(Fore.GREEN + f"\rTest {name_test} Finish at {datetime.now().strftime('%Y-%m-%d %H-%M-%S')}" + Fore.RESET + "\n")
 
 
-def _220V_test(obj: Hub, mode, sel2, distance, type_cable):
+def _220V_test(obj: Logging, mode, sel2, distance, type_cable):
     if mode == 2:
         print(Fore.YELLOW + "Отключите АКБ и нажмите ENTER для продолжения тестов " + Fore.RESET)
         wait_enter()
@@ -230,7 +230,7 @@ def _220V_test(obj: Hub, mode, sel2, distance, type_cable):
         start_test(obj, distance, type_cable, "220V_ETH")
 
 
-def _AKB_test(obj: Hub, mode, sel2, distance, type_cable):
+def _AKB_test(obj: Logging, mode, sel2, distance, type_cable):
     # Normal AKB Test
     if mode == 2:
         print(Fore.YELLOW + "1. Подключите заряженый АКБ")
@@ -269,7 +269,7 @@ def _AKB_test(obj: Hub, mode, sel2, distance, type_cable):
         start_test(obj, distance, type_cable, "AKB_ETH")
 
 
-def _LOW_AKB_test(obj: Hub, mode, sel2, distance, type_cable):
+def _LOW_AKB_test(obj: Logging, mode, sel2, distance, type_cable):
     # LOW Power AKB Test
     if mode == 2:
         print(Fore.YELLOW + "1. Подключите питание 220В")
@@ -311,7 +311,7 @@ def _LOW_AKB_test(obj: Hub, mode, sel2, distance, type_cable):
         start_test(obj, distance, type_cable, "LOW_AKB_ETH")
 
 
-def _Charge_AKB_test(obj: Hub, mode, sel2, distance, type_cable):
+def _Charge_AKB_test(obj: Logging, mode, sel2, distance, type_cable):
     # Charge AKB
     if mode == 2:
         print(Fore.YELLOW + "1. Подключите питание 220В и нажмите ENTER для продолжения тестов" + Fore.RESET)
@@ -356,9 +356,8 @@ def _Charge_AKB_test(obj: Hub, mode, sel2, distance, type_cable):
 
 def main():
     UART_SPEED = 115200
-    hub = Hub()
     port = input("Введите номер порта: ")
-    hub.set_serial_port(port, UART_SPEED)                              # set UART port and SPEED for class object
+    hub = Logging(port, UART_SPEED)                              # set UART port and SPEED for class object
 
     mode = test_mode()
     get_info(hub, mode)                                                # checking for devices on the hub if automatic test mode is selected

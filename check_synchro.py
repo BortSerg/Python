@@ -1,7 +1,6 @@
 #!/usr/bin/sudo python3
 
-from my_serialdata import Hub
-from datetime import datetime
+from my_logging import Logging
 from colorama import Fore
 from keyboard import is_pressed
 
@@ -13,14 +12,14 @@ def show_info(dev_list_status, frame):
         print(f"{_dev_id_} {_cmd_status_} {_time_15_count_} {_time_30_count_} {_time_60_count_}")
 
 
-def get_id_dev_on_hub(obj: Hub):
+def get_id_dev_on_hub(obj: Logging):
     dev_list_status = []
     obj.write_serial("show")
     while True:                                             # ожидание в строке слова "show"
-        if "show" in obj.read_serial():
+        if "show" in obj.write_log():
             break
     while True:
-        line = obj.read_serial()
+        line = obj.write_log()
         line_parts = line.split()
 
         if "Hub" in line:
@@ -46,7 +45,7 @@ def get_id_dev_on_hub(obj: Hub):
     return dev_list_status
 
 
-def check_change_frame(obj: Hub, line):                     # отслеживание изменения фрейма по hts команде
+def check_change_frame(obj: Logging, line):                     # отслеживание изменения фрейма по hts команде
     write_param = f"WRITE_PARAM 21 0521 05{obj.hub_id} 0538"
     if write_param in line:
         sub_line = line.split(" ")
@@ -72,7 +71,7 @@ def check_duplicate(id, id_list):
     return duplicate
 
 
-def check_add_device(obj: Hub, line, dev_list_status):   # отслеживание добавления новых девайсов
+def check_add_device(obj: Logging, line, dev_list_status):   # отслеживание добавления новых девайсов
     line_parts = line.split(";")
 
     if "CMD=14" in line:                                        # добавление в список состояний dev_list_status
@@ -92,7 +91,7 @@ def check_add_device(obj: Hub, line, dev_list_status):   # отслеживан�
     show_info(dev_list_status, obj.frame)
 
 
-def check_GoToFindSynchro(obj: Hub, line, dev_list_status):      # отслеживание получения команды на пересинхронизацию
+def check_GoToFindSynchro(obj: Logging, line, dev_list_status):      # отслеживание получения команды на пересинхронизацию
     if "CMD=20" in line:
         line_parts = line.split(";")
         dev_id = line_parts[3]
@@ -105,7 +104,7 @@ def check_GoToFindSynchro(obj: Hub, line, dev_list_status):      # отслеж�
                 show_info(dev_list_status, obj.frame)
 
 
-def count_CheckSynchro(obj: Hub, line, dev_list_status):         # отслеживание с чет пакетов запроса поправки
+def count_CheckSynchro(obj: Logging, line, dev_list_status):         # отслеживание с чет пакетов запроса поправки
     if "CMD=23" in line:
         line_parts = line.split(";")
         dev_id = line_parts[3]
@@ -133,7 +132,7 @@ def count_CheckSynchro(obj: Hub, line, dev_list_status):         # отслеж�
                 show_info(dev_list_status, obj.frame)
 
 
-def check_delete_dev(obj: Hub, line, dev_list_status):   # отслеживание команды на удаление датчика
+def check_delete_dev(obj: Logging, line, dev_list_status):   # отслеживание команды на удаление датчика
     if "05 DEV_REG 05 050635 05" in line:
         line_parts = line.split(" ")
         dev_id = line_parts[16][2:]
@@ -146,7 +145,7 @@ def check_delete_dev(obj: Hub, line, dev_list_status):   # отслеживан�
         show_info(dev_list_status, obj.frame)
 
 
-def check_end_scan_period(obj: Hub, line, dev_list_status):
+def check_end_scan_period(obj: Logging, line, dev_list_status):
     if "DEV_REG 0A 050A 0500 0500 05" in line:
         while len(dev_list_status) > len(obj.id_dev_arr):
             for element in dev_list_status:
@@ -164,14 +163,13 @@ def check_end_scan_period(obj: Hub, line, dev_list_status):
 
 def main():
     frame = 0
-    hub = Hub()
     port = input("Ведите номер порта: ")
-    hub.set_serial_port(port, 115200)
-    hub.crete_log_file(f"CheckSynchro {datetime.now().strftime('%Y-%m-%d %H-%M-%S')}")
+    hub = Logging(port, 115200)
+    hub.prefix_name_log_file = "CheckSynchro"
     dev_list_status = get_id_dev_on_hub(hub)
 
     while True:
-        line = hub.read_serial()
+        line = hub.write_log()
 
         if check_change_frame(hub, line):                   # отслеживание смены фрейма
             reset_statistic(dev_list_status)                # сброс статистики по синхронизации

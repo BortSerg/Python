@@ -2,33 +2,32 @@
 
 from colorama import Fore
 from time import time
-from my_serialdata import Hub
-from datetime import datetime
+from my_logging import Logging
 
 
-def fibra_scan(obj: Hub):
+def fibra_scan(obj: Logging):
     dev_id_list = []
     obj.write_serial("log j* 5")
     obj.write_serial("fibra reset")
     time_command = int(time())
     while int(time()) - time_command < 2:
-        obj.read_serial()
+        obj.write_log()
 
     obj.write_serial("fibra scan")  # начать сканировиние шин
     while True:
-        line = obj.read_serial()
+        line = obj.write_log()
         if "Finish SCAN" in line:
             break
 
 
-def show_dev(obj: Hub):
+def show_dev(obj: Logging):
     dev_id_list = []
     obj.write_serial("show")
-    while obj.read_serial().split(" ")[0] not in {"Hub", "User", "Room", "Device"}:
+    while obj.write_log().split(" ")[0] not in {"Hub", "User", "Room", "Device"}:
         pass
 
     while True:
-        line = obj.read_serial()
+        line = obj.write_log()
         line_part = line.split(" ")
         if "Device" in line:
             print(Fore.YELLOW + line + Fore.RESET)
@@ -38,14 +37,14 @@ def show_dev(obj: Hub):
     return dev_id_list
 
 
-def blink_dev(obj: Hub, dev_id_list, flag):
+def blink_dev(obj: Logging, dev_id_list, flag):
     counter = len(dev_id_list)
     for dev_id in dev_id_list:
         counter -= 1
         obj.write_serial(f"fibra {flag} {dev_id}")
         time_command = int(time())
         while True:
-            line = obj.read_serial()
+            line = obj.write_log()
             if f"{dev_id};CMD=130" in line and (counter >= 0):
                 if flag.upper() == "ON":
                     print(Fore.GREEN)
@@ -54,15 +53,14 @@ def blink_dev(obj: Hub, dev_id_list, flag):
                 print(f"Blink  {flag.upper()} {dev_id}" + Fore.RESET)
 
                 while int(time()) - time_command < 2:
-                    obj.read_serial()
+                    obj.write_log()
                 break
 
 
 def main():
-    hub = Hub()
     port = input("Ведите номер порта: ")
-    hub.set_serial_port(port, 115200)
-    hub.crete_log_file(f"Blink {datetime.now().strftime('%Y-%m-%d %H-%M-%S')}")
+    hub = Logging(port, 115200)
+    hub.prefix_name_log_file = "blink"
     print(hub.get_path_log_file(), hub.get_name_log_file())
 
     fibra_scan(hub)
