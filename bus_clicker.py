@@ -7,9 +7,8 @@ def main():
     port = input("port: ")
     hub = Logging(port, 115200)
     time_pause = input("cycle time (sec): ")
-    if time_pause == "":
-        print("cycle time default set 20 sec")
-        time_pause = 20
+    time_pause = 20 if time_pause == "" else int(time_pause)
+
     hub.prefix_name_log_file = "devcom 1e"
     hub.print_data = True
     time_start = int(time())
