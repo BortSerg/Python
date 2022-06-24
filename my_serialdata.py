@@ -26,7 +26,7 @@ class SerialData(Hub):
         """
 
     def set_serial_port(self, port, speed: int):
-        self.__serial_port = serial.Serial("/dev/ttyUSB" + str(port), speed)
+        self.__serial_port = serial.Serial("/dev/ttyUSB" + str(port), speed) if self.os_system in ("linux", "linux2") else serial.Serial("COM"+str(port), speed)
         self.__port = port
         self.__speed = speed
 

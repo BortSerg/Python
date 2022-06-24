@@ -1,7 +1,9 @@
 from os import getlogin, getcwd
 from datetime import datetime
 from pathlib import Path
-from os import chown, chmod
+from sys import platform
+if platform in {"linux", "linux2"}:
+    from os import chown, chmod
 from my_serialdata import SerialData
 
 
@@ -58,9 +60,10 @@ class Logging(SerialData):
 
         file = open(self.__path + self.__name_log_file, 'w')
         file.close()
-
-        chmod(file.name, 0o777)
-        chown(file.name, 1000, 1000)
+        print(platform)
+        if platform in {"linux", "linux2"}:
+            chmod(file.name, 0o777)
+            chown(file.name, 1000, 1000)
 
     def get_hub_info(self):
         self.write_serial("show")
