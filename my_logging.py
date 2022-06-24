@@ -84,7 +84,10 @@ class Logging(SerialData):
                 self.id_dev_arr.append(parts_line[2])
 
             if parts_line[0] not in {"Hub", "User", "Room", "Device"}:
-                break
+                if self.hub_id is None:
+                    self.get_hub_info()
+                else:
+                    break
 
     def write_log(self):
         date_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
