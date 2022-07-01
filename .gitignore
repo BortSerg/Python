@@ -1,2 +1,5 @@
 # ignore all spec files after PyInstaller
 *.spec
+*.zip
+*.7z
+*.rar
