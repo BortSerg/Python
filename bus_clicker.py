@@ -1,5 +1,5 @@
 #!/usr/bin/sudo python3
-# ver 2.0.0
+# ver 2.0.1
 from my_logging import Logging
 from time import time
 from keyboard import is_pressed
@@ -99,7 +99,7 @@ def main():
                         }
 
     settings_custom = {"door": "01810101",  # dict custom settings for fibra device
-                       "door_plus": "00000000",
+                       "door_plus": "918B2585",
                        "motion_protect": "",
                        "glass_protect": "",
                        "combi_protect": "",
