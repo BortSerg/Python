@@ -1,5 +1,5 @@
 #!/usr/bin/sudo python3
-# ver 2.0.2
+# ver 2.0.3
 from my_logging import Logging
 from time import time
 from keyboard import is_pressed
