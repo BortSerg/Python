@@ -1,7 +1,6 @@
 #!/usr/bin/sudo python3.10
 
-from my_serialdata import SerialData, Hub
-from my_logging import Logging
+from my_serialdata import Hub
 from colorama import Fore
 from time import time
 from datetime import datetime
@@ -79,7 +78,7 @@ def main():
         print(hub.get_path_log_file(), hub.get_name_log_file())
         hub.write_serial("log j* 5")
         hub.set_print_data(True)
-        show_devises(hub, added_dev_list)   # показать девайсы что уже есть на хабе и запомнить их
+        show_devises(hub, added_dev_list)   # показать девайсы, что уже есть на хабе и запомнить их
         add_device(hub, added_dev_list, dev_type)
 
 
