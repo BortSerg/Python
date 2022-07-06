@@ -100,12 +100,12 @@ def main():
 
     settings_custom = {"door": "01810101",  # dict custom settings for fibra device
                        "door_plus": "918B2585",
-                       "motion_protect": "",
+                       "motion_protect": "02810180",
                        "glass_protect": "02810180",
-                       "combi_protect": "",
-                       "keyboard": "",
+                       "combi_protect": "11830101",
+                       "keyboard": "83810101",
                        "motion_cam": "",
-                       "motion_protect_plus": "",
+                       "motion_protect_plus": "02810180",
                        "street_siren": "",          # siren use CMD=22 command [0600{packet_number}{settings_byte}]
                        "home_siren": "",
                        "street_siren_double_deck": ""
