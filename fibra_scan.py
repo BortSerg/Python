@@ -1,43 +1,45 @@
-#!/usr/bin/sudo python3.10
+#!/usr/bin/sudo python3
 
-from my_serialdata import Hub
+from my_logging import Logging
 from colorama import Fore
 from time import time
-from datetime import datetime
 
 
-def show_devises(obj: Hub, list):
+def show_devises(obj: Logging, list):
     obj.write_serial("show")
-    while obj.read_serial().split(" ")[0] not in {"Hub", "User", "Room", "Device"}:
-        pass
     while True:
-        console_line = obj.read_serial()
+        if "show" in obj.write_log():
+            break
+
+    while True:
+        console_line = obj.write_log()
         if "Device" in console_line:
-            _, dev_type, dev_id, *_ = console_line.split(" ")
+            _, dev_type, dev_id, *_ = console_line.split(" ")[2:]
             list.append((dev_type, dev_id))
         else:
-            if console_line.split(" ")[0] not in {"Hub", "User", "Room", "Device"}:
+            if console_line.split(" ")[2] not in {"Hub", "User", "Room", "Device"}:
                 break
 
 
-def wait():
+def wait(obj: Logging):
     time_start = int(time())
     while True:
+        obj.write_log()
         if int(time() - time_start) > 2:
             break
 
 
-def add_device(obj: Hub,  added_list, type):  # added_list - список с устройствами на хабе до скана; scan_list - список после скана
+def add_device(obj: Logging,  added_list, type):  # added_list - список с устройствами на хабе до скана; scan_list - список после скана
     scan_list = []
     finish_scan = "Finish SCAN"
 
     obj.write_serial("fibra reset")
-    wait()
+    wait(obj)
     obj.write_serial("fibra scan")
-    wait()
+    wait(obj)
 
     while True:                     # отслеживание конца сканирования
-        line = obj.read_serial()
+        line = obj.write_log()
         if finish_scan in line:
             break
 
@@ -52,7 +54,7 @@ def add_device(obj: Hub,  added_list, type):  # added_list - список с у�
         if type == "FF" or dev[0] == type:
             obj.write_serial(f"jwl3 add {dev[0]} {dev[1]}")
             while True:
-                console_line = obj.read_serial()
+                console_line = obj.write_log()
                 if f"{dev[1]};CMD=20;" in console_line:
                     break
 
@@ -64,9 +66,9 @@ def add_device(obj: Hub,  added_list, type):  # added_list - список с у�
 
 def main():
     added_dev_list = []
-    hub = Hub()
     port = input('Введите номер порта: ')
-    hub.set_serial_port(port, 115200)
+    hub = Logging(port, 115200)
+    hub.prefix_name_log_file = "FibraScan"
 
     print('введите тип девайса FIBRA для добавления.')
     dev_type = input('для добавления всех отсканеных девайсов ввести FF: ')
@@ -74,11 +76,10 @@ def main():
     if dev_type not in {"61", "62", "64", "68", "6A", "6D", "6E", "6F", "74", "75", "7C", "FF"}:
         raise "Incorrect device type! Try again"
     else:
-        hub.crete_log_file(f"FibraScan {datetime.now()}")
         print(hub.get_path_log_file(), hub.get_name_log_file())
         hub.write_serial("log j* 5")
-        hub.set_print_data(True)
-        show_devises(hub, added_dev_list)   # показать девайсы, что уже есть на хабе и запомнить их
+        hub.print_data = True
+        show_devises(hub, added_dev_list)   # показать девайсы что уже есть на хабе и запомнить их
         add_device(hub, added_dev_list, dev_type)
 
 
