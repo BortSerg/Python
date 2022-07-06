@@ -70,6 +70,7 @@ def change_ready_to_load_settings(obj: Logging, line: str, dev_list: list):  # p
 def main():
     device_table = []
     port = input("port: ")
+    method = int(input(Fore.YELLOW + "[1] - devcom method\n[2] - jwl1 jwire method\n:" + Fore.RESET))
     hub = Logging(port, 115200)
     time_pause = input("cycle time (sec): ")
 
@@ -126,7 +127,10 @@ def main():
     while True:
         line = hub.write_log()
         if int(time()) - time_start >= time_pause:
-            hub.write_serial("jwl1 jwire* on") if permission_send_settings else hub.write_serial("jwl1 jwire* off")
+            if method == 1:
+                hub.write_serial(f"devcom 1e 21 {hub.hub_id} 01") if permission_send_settings else hub.write_serial(f"devcom 1e 21 {hub.hub_id} 00")
+            if method == 2:
+                hub.write_serial("jwl1 jwire* on") if permission_send_settings else hub.write_serial("jwl1 jwire* off")
 
             if permission_send_settings:
                 for index, data in enumerate(device_table):
@@ -146,7 +150,7 @@ def main():
         change_ready_to_load_settings(hub, line, device_table)
 
         if is_pressed(f"ctrl + alt + {port}"):
-            hub.write_serial("jwl1 jwire* on")
+            hub.write_serial(f"devcom 1e 21 {hub.hub_id} 01") if method == 1 else hub.write_serial("jwl1 jwire* on")
             line = hub.write_log()
             hub.close_port()
             break
