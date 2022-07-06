@@ -1,5 +1,5 @@
 #!/usr/bin/sudo python3
-# ver 2.0.1
+# ver 2.0.2
 from my_logging import Logging
 from time import time
 from keyboard import is_pressed
@@ -65,7 +65,6 @@ def change_ready_to_load_settings(obj: Logging, line: str, dev_list: list):  # p
                 data = [dev_type, dev_id, dev_net_id, ready, default_settings]
                 dev_list[index] = data
                 pass
-        obj.write_serial("jwl3 pool")  # check jwl3 command pool
 
 
 def main():
@@ -101,7 +100,7 @@ def main():
     settings_custom = {"door": "01810101",  # dict custom settings for fibra device
                        "door_plus": "918B2585",
                        "motion_protect": "",
-                       "glass_protect": "",
+                       "glass_protect": "02810180",
                        "combi_protect": "",
                        "keyboard": "",
                        "motion_cam": "",
@@ -121,7 +120,7 @@ def main():
                      "6E": "motion_protect_plus",
                      "74": "street_siren",
                      "75": "home_siren",
-                     "7B": "street_siren_double_deck"
+                     "7B": " "
                      }
 
     while True:
