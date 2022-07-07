@@ -1,5 +1,5 @@
 #!/usr/bin/sudo python3
-# ver 2.0.3
+# ver 2.0.4
 from my_logging import Logging
 from time import time
 from keyboard import is_pressed
@@ -12,7 +12,6 @@ def add_dev_to_list(obj: Logging, dev_list: list):
     dev_index_list = []
     count = 0
 
-    obj.write_serial("jwl1 jwire* on")
     obj.write_serial("show")                                        # show all devices
     while True:
         if "show" in obj.write_log():                               # wait command in commandline
@@ -72,12 +71,16 @@ def main():
     port = input("port: ")
     method = int(input(Fore.YELLOW + "[1] - devcom method\n[2] - jwl1 jwire method\n:" + Fore.RESET))
     hub = Logging(port, 115200)
+    hub.print_data = True  # print hub logs in console
+
     time_pause = input("cycle time (sec): ")
 
     time_pause = 20 if time_pause == "" else int(time_pause)  # set cycle time
 
-    hub.prefix_name_log_file = "jwire_on_off"  # prefix name log file
-    hub.print_data = True  # print hub logs in console
+    hub.prefix_name_log_file = "jwire_on_off" if method == 2 else "devcom"      # prefix name log file
+
+    hub.write_serial(f"devcom 1e 21 {hub.hub_id} 01")       # bus on power end rx_tx
+    hub.write_serial("jwl1 jwire* on")
 
     add_dev_to_list(hub, device_table)
 
