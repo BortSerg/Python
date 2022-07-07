@@ -1,4 +1,5 @@
 #!/usr/bin/sudo python3
+#ver 2.0.1
 
 from my_logging import Logging
 from colorama import Fore
@@ -17,7 +18,7 @@ def show_devises(obj: Logging, list):
             _, dev_type, dev_id, *_ = console_line.split(" ")[2:]
             list.append((dev_type, dev_id))
         else:
-            if console_line.split(" ")[2] not in {"Hub", "User", "Room", "Device"}:
+            if console_line.split(" ")[2] not in {"Hub", "User", "Room", "Device", "Group"}:
                 break
 
 
