@@ -1,5 +1,5 @@
 #!/usr/bin/sudo python3
-# ver 2.0.4
+# ver 2.0.5
 from my_logging import Logging
 from time import time
 from keyboard import is_pressed
@@ -69,15 +69,15 @@ def change_ready_to_load_settings(obj: Logging, line: str, dev_list: list):  # p
 def main():
     device_table = []
     port = input("port: ")
-    method = int(input(Fore.YELLOW + "[1] - devcom method\n[2] - jwl1 jwire method\n:" + Fore.RESET))
     hub = Logging(port, 115200)
     hub.print_data = True  # print hub logs in console
-
-    time_pause = input("cycle time (sec): ")
-
+    time_pause = input("cycle time (default 20 sec): ")
     time_pause = 20 if time_pause == "" else int(time_pause)  # set cycle time
 
-    hub.prefix_name_log_file = "jwire_on_off" if method == 2 else "devcom"      # prefix name log file
+    set_settings = int(input("set settings?\n" + Fore.MAGENTA + "[1] - Yes\n[0] - No\n:" + Fore.RESET))
+    method = int(input(Fore.YELLOW + "[1] - devcom method\n[2] - jwl1 jwire method\n:" + Fore.RESET))
+
+    hub.prefix_name_log_file = "jwire_on_off" if method == 2 else "devcom_on_off"      # prefix name log file
 
     hub.write_serial(f"devcom 1e 21 {hub.hub_id} 01")       # bus on power end rx_tx
     hub.write_serial("jwl1 jwire* on")
@@ -135,19 +135,21 @@ def main():
             if method == 2:
                 hub.write_serial("jwl1 jwire* on") if permission_send_settings else hub.write_serial("jwl1 jwire* off")
 
-            if permission_send_settings:
-                for index, data in enumerate(device_table):
-                    dev_type, dev_id, dev_net_id, ready, default_settings = data
-                    if ready and (dev_net_id is not None):
-                        hub.write_serial(f"jwl2 send_ed {dev_net_id} 36 {settings_default[dev_type_name[dev_type]]}") if default_settings \
-                            else hub.write_serial(f"jwl2 send_ed {dev_net_id} 36 {settings_custom[dev_type_name[dev_type]]}")
-                        default_settings = not default_settings
-                        ready = False
-                        data = [dev_type, dev_id, dev_net_id, ready, default_settings]
-                        device_table[index] = data
-                        pass
+            if set_settings:
+                if permission_send_settings:
+                    for index, data in enumerate(device_table):
+                        dev_type, dev_id, dev_net_id, ready, default_settings = data
+                        if ready and (dev_net_id is not None):
+                            hub.write_serial(f"jwl2 send_ed {dev_net_id} 36 {settings_default[dev_type_name[dev_type]]}") if default_settings \
+                                else hub.write_serial(f"jwl2 send_ed {dev_net_id} 36 {settings_custom[dev_type_name[dev_type]]}")
+                            default_settings = not default_settings
+                            ready = False
+                            data = [dev_type, dev_id, dev_net_id, ready, default_settings]
+                            device_table[index] = data
+                            pass
 
-            permission_send_settings = not permission_send_settings     # revert permission in next cycle
+                permission_send_settings = not permission_send_settings     # revert permission in next cycle
+
             time_start = int(time())                                    # new time count
 
         change_ready_to_load_settings(hub, line, device_table)
