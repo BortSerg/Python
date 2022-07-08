@@ -1,5 +1,5 @@
 #!/usr/bin/sudo python3
-# ver 2.0.5
+# ver 2.0.6
 from my_logging import Logging
 from time import time
 from keyboard import is_pressed
@@ -96,7 +96,7 @@ def main():
                         "keyboard": "F5800000",
                         "motion_cam": "",
                         "motion_protect_plus": "01800000",
-                        "street_siren": "",                 # siren use CMD=22 command [0600{packet_number}{settings_byte}]
+                        "street_siren": "536888480",
                         "home_siren": "",
                         "street_siren_double_deck": ""
                         }
@@ -110,7 +110,7 @@ def main():
                        "motion_cam": "",
                        "motion_protect_plus": "02810180",
                        "street_siren": "",          # siren use CMD=22 command [0600{packet_number}{settings_byte}]
-                       "home_siren": "",
+                       "home_siren": "D36888490",
                        "street_siren_double_deck": ""
                        }
 
