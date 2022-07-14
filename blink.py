@@ -28,8 +28,9 @@ def show_dev(obj: Logging):
 
     while True:
         line = obj.write_log()
-        line_part = line.split(" ")
-        if "Device" in line:
+        line_part = line.split()
+        dev_type = line_part[3]
+        if "Device" in line and dev_type in {"61", "62", "64", "68", "6A", "6D", "6E", "6F", "74", "75", "7C", "FF"}:
             print(Fore.YELLOW + line[21:] + Fore.RESET)
             dev_id_list.append(line_part[4])
         elif line_part[2] not in {"Hub", "User", "Room", "Device"}:
