@@ -140,7 +140,6 @@ def main():
     id_dev_arr = get_hub_dev_id(hub)                        # получение ID хаба и списка девайсов на хабе
     hub.clear_console()                                     # очистка экрана консоли
     hub.write_serial(f"devcom 1d 21 {hub.hub_id} 0")
-    """
     # Test 1 === Full normal power test
     print(Fore.RED + "Test #1 ==== Full normal power test" + Fore.RESET)
     start_power_test(hub, id_dev_arr)                       # начало теста
@@ -152,18 +151,16 @@ def main():
     start_stop_power_test(hub, id_dev_arr)
     wait_hts_power_test_status(hub, id_dev_arr)
     state_test(hub, id_dev_arr)
-    """
     # Test 3 === Power Reset / Low Power
     print("1. Подключите датчики от ЛБП. \n2. Ожидайте сообщения о начале теста.\n3. С помощью ЛБП измените/сбросьте напряжение питания датчиков")
     print(Fore.GREEN + "\n\nЕсли готовы начать тест нажмите ENTER" + Fore.RESET)
 
-    #wait_enter()
+    wait_enter()
 
     print(Fore.RED + "Test #3 ==== Power Low / Power Reset" + Fore.RESET)
     start_power_test(hub, id_dev_arr)
     wait_hts_power_test_status(hub, id_dev_arr)
     state_test(hub, id_dev_arr)
-    """
     # Test 4 === Test stop KZ
     reset_anomaly_power_count(id_dev_arr)
     print(Fore.RED + "Test #4 ==== Stop KZ" + Fore.RESET)
@@ -176,7 +173,6 @@ def main():
     wait_hts_power_test_status(hub, id_dev_arr)
     state_test(hub, id_dev_arr)
     hub.close_port()
-    """
 
 if __name__ == '__main__':
     main()

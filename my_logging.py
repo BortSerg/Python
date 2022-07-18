@@ -60,7 +60,7 @@ class Logging(SerialData):
 
         file = open(self.__path + self.__name_log_file, 'w')
         file.close()
-        print(platform)
+        #print(platform)
         if platform in {"linux", "linux2"}:
             chmod(file.name, 0o777)
             chown(file.name, 1000, 1000)

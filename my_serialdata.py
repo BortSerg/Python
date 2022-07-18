@@ -18,12 +18,6 @@ class SerialData(Hub):
 
     def clear_console(self):
         system('clear') if self.os_system in {"linux", "linux2"} else system('cls')
-        """
-        if self.os_system in {"linux", "linux2"}:
-            system('clear')
-        if self.os_system == "win32":
-            system('cls')
-        """
 
     def set_serial_port(self, port, speed: int):
         self.__serial_port = serial.Serial("/dev/ttyUSB" + str(port), speed) if self.os_system in ("linux", "linux2") else serial.Serial("COM"+str(port), speed)
