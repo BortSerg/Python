@@ -118,27 +118,27 @@ def get_info(obj: Logging, mode):
         line_parts = line.split(" ")
         if "Hub" in line:
             hub_name = ""
-            for i in line_parts[6:]:
+            for i in line_parts[8:]:
                 hub_name += i
             obj.hub_name = hub_name[:-2]    # delete \r\n in end line
             obj.hub_id = line_parts[5]
 
         if mode == 1:
             if "Device 1E" in line:
-                obj.socket_id = line_parts[2][2:].upper()
+                obj.socket_id = line_parts[4][2:].upper()
 
             if "Device 12" in line:
-                if "LOW" in line_parts[3].upper():
-                    obj.relay_low_id = line_parts[2][2:].upper()
-                if "NOR" in line_parts[3].upper():
-                    obj.relay_norm_id = line_parts[2][2:].upper()
+                if "LOW" in line_parts[5].upper():
+                    obj.relay_low_id = line_parts[4][2:].upper()
+                if "NOR" in line_parts[5].upper():
+                    obj.relay_norm_id = line_parts[4][2:].upper()
 
         if mode == 2:
             obj.socket_id = "000000"
             obj.relay_norm_id = "000000"
             obj.relay_low_id = "000000"
 
-        if line_parts[0] not in {"Hub", "User", "Room", "Device"}:
+        if line_parts[2] not in {"Hub", "User", "Room", "Device"}:
             break
     conditions = (obj.socket_id, obj.relay_low_id, obj.relay_norm_id)
     descriptions = [
