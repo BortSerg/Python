@@ -3,6 +3,7 @@ from random import randint
 import xlsxwriter as xw
 from os import getcwd
 from sys import platform
+from datetime import datetime
 
 
 def generate_head_list(test_list: list, volt_list: list, akb_list: list, temp_list: list):
@@ -71,15 +72,16 @@ def print_to_console(test_list: list):
 
 
 def export_to_xlsx(test_list: list):
+    filename = f"{datetime.now().strftime('%Y-%m-%d %H-%M-%S')}_pairwise.xlsx"
     if platform in {"linux", "linux2"}:
-        file = open(f"{getcwd()}/pairwaise.xlsx", "w")
+        file = open(f"{getcwd()}/{filename}", "w")
         file.close()
     if platform == "win32":
-        file = open(f"{getcwd()}\pairwaise.xlsx", "w")
+        file = open(f"{getcwd()}\{filename}", "w")
         file.close()
 
     akb_status = ["LOW", "100%"]
-    book = xw.Workbook(filename="pairwaise.xlsx")
+    book = xw.Workbook(filename=filename)
     write_to_book = book.add_worksheet(name="pairwise")
 
     head_merge_format = book.add_format({
