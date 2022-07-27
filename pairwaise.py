@@ -22,11 +22,14 @@ def generate_random_connect_list(test_list: list, connect_type: list):
             volt, akb, connect, temp = test_list[row]
             if row < 12:
                 while True:
+                    if row == 0 or row == 8:
+                        connect = connect_type[0]  # = eth
+                        break
                     connect = connect_type[randint(0, 2)]
                     if (idx == 0 or idx == 3) and counter[connect] == 0:
                         counter[connect] += 1
                         break
-                    if (0 < idx < 3) and (counter[connect]) == 0:
+                    if (0 < idx < 3) and (counter[connect]) <= 1:
                         check_list = []
                         for x in range(row - idx, row, 1):
                             check_list.append(test_list[x][2])
@@ -56,11 +59,14 @@ def generate_random_connect_list(test_list: list, connect_type: list):
                 test_list[-2:-1][0][2] = connect
                 break
 
+    test_list.insert(1, [85, "Low_AKB", 'gprs', -10])
+    test_list.insert(10, [85, "Low_AKB", 'gprs', 45])
+
 
 def print_to_console(test_list: list):
     for i in range(len(test_list)):
         print(test_list[i])
-        if i in {3, 7, 11, 15, }:
+        if i in {4, 8, 13, 17}:
             print("=" * 26)
 
 
@@ -108,41 +114,42 @@ def export_to_xlsx(test_list: list):
     # generate head
     for row in range(3):
         if row > 0:
-            row *= 7
+            row *= 9
         for col in range(2):
             write_to_book.set_column(col * 6 + 2, col * 6 + 2, 10)
-            write_to_book.merge_range(row, col * 6 + 1, row, col * 6 + 3, f"АКБ {akb_status[col]}", head_merge_format)
+            write_to_book.merge_range(row, col * 6 + 1, row, col * 6 + 4, f"АКБ {akb_status[col]}", head_merge_format)
             write_to_book.write(row + 1, col * 6 + 1, "Voltage", head_text_format)
             write_to_book.write(row + 1, col * 6 + 2, "Connection", head_text_format)
             write_to_book.write(row + 1, col * 6 + 3, "Temp", head_text_format)
+            write_to_book.write(row + 1, col * 6 + 4, "Reusults", head_text_format)
 
     # write data to table
-    for x in range(4):
-        row = x + 2                                     # start delta rows, because use head
-        for idx in range(x, len(test_list), 4):
-            voltage, akb_status, conn_type, temperature = test_list[idx]
-            if akb_status == "Low_AKB":
-                write_to_book.write(row, 1, voltage, body_format)
-                write_to_book.write(row, 2, conn_type, body_format)
-                write_to_book.write(row, 3, temperature, body_format)
-            if akb_status == "Norm_AKB":
-                if idx == 18 or idx == 19:
-                    row -= 2
-                write_to_book.write(row, 7, voltage, body_format)
-                write_to_book.write(row, 8, conn_type, body_format)
-                write_to_book.write(row, 9, temperature, body_format)
-                row += 7
+    for idx in range(0, len(test_list), 1):
+        row = idx + 2
+        voltage, akb_status, conn_type, temperature = test_list[idx]
+        if akb_status == "Low_AKB":
+            write_to_book.write(row, 1, voltage, body_format)
+            write_to_book.write(row, 2, conn_type, body_format)
+            write_to_book.write(row, 3, temperature, body_format)
+            write_to_book.write(row, 4, "", body_format)
+        if akb_status == "Norm_AKB":
+            row = row - 5 if idx < 20 else row - 2
+            write_to_book.write(row, 7, voltage, body_format)
+            write_to_book.write(row, 8, conn_type, body_format)
+            write_to_book.write(row, 9, temperature, body_format)
+            write_to_book.write(row, 10, "", body_format)
     book.close()
+    print(f"file save path {getcwd()}/pairwaise.xlsx")
 
 
 def main():
     connect_type = ["eth", "gprs", "eth+gprs"]
-    volt_list = [85, 110, 220, 250]
+    volt_list = [85, 150, 220, 250]
     akb_list = ["Low_AKB", "Norm_AKB"]
     temp_list = [-10, 45]
     test_list = []
 
-    generate_head_list(test_list, volt_list , akb_list, temp_list)                        # generate head test list
+    generate_head_list(test_list, volt_list, akb_list, temp_list)                         # generate head test list
 
     generate_random_connect_list(test_list, connect_type)                                 # generate random connection type
 
