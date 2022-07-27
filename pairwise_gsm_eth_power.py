@@ -65,6 +65,7 @@ def export_to_xlsx(conn_type: list, norm_temp_list: list, test_list: list):
                 write_to_book.write(row + 2 + y, col + 2, "", body_format)
         else:
             for i in range(2):
+                write_to_book.write(row + 2 + i, col, norm_temp_list[i*3], body_format)
                 write_to_book.write(row + 2 + i, col + 1, f"{power_type[0]}", body_format)
                 write_to_book.write(row + 2 + i, col + 2, "", body_format)
 
@@ -86,6 +87,7 @@ def export_to_xlsx(conn_type: list, norm_temp_list: list, test_list: list):
         else:
             for i in range(2):
                 write_to_book.write(row + 2 + i, col, 220, body_format)
+                write_to_book.write(row + 2 + i, col + 1, norm_temp_list[(i * 3) + 1], body_format)
                 write_to_book.write(row + 2 + i, col + 2, power_type[1], body_format)
                 write_to_book.write(row + 2 + i, col + 3, "", body_format)
 
@@ -107,10 +109,10 @@ def export_to_xlsx(conn_type: list, norm_temp_list: list, test_list: list):
                 write_to_book.write(row + 3 + idx, col, volt, body_format)
                 write_to_book.write(row + 3 + idx, col + 2, power_type[2], body_format)
                 write_to_book.write(row + 3 + idx, col + 3, "", body_format)
-
         else:
             for i in range(2):
                 write_to_book.write(row + 2 + i, col, 220, body_format)
+                write_to_book.write(row + 2 + i, col + 1, norm_temp_list[(i * 3) + 2], body_format)
                 write_to_book.write(row + 2 + i, col + 2, power_type[2], body_format)
                 write_to_book.write(row + 2 + i, col + 3, "", body_format)
 
@@ -118,7 +120,16 @@ def export_to_xlsx(conn_type: list, norm_temp_list: list, test_list: list):
 
 
 def random_norm_temp(norm_temp_list: list, conn_type: list):
-    pass
+    for row in range(2):
+        count = {"ETH": 0, "GPRS": 0, "ETH+GPRS": 0}
+        for col in range(3):
+            while True:
+                value = conn_type[randint(0, 2)]
+                if (count[value] == 0 and row == 0) or (count[value] == 0 and row == 1 and value != norm_temp_list[col - 3] and value != norm_temp_list[col - 2]):
+                    count[value] += 1
+                    break
+            norm_temp_list.append(value)
+    print(norm_temp_list)
 
 
 def random_test_list(test_list: list, conn_type: list):
@@ -129,7 +140,7 @@ def main():
     conn_type = ["ETH", "GPRS", "ETH+GPRS"]
     norm_temp_list = []
     test_list = []
-
+    random_norm_temp(norm_temp_list,  conn_type)
     export_to_xlsx(conn_type, norm_temp_list, test_list)
 
 
