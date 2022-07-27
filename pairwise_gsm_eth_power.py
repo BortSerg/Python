@@ -6,7 +6,7 @@ from sys import platform
 from datetime import datetime
 
 
-def export_to_xlsx(conn_type: list):
+def export_to_xlsx(conn_type: list, norm_temp_list: list, test_list: list):
     power_type = ["АКБ", "От сети", "220+Charge"]
     temperature_list = ['-10', '+45', '+25']
     voltage_list = [85, 150, 220, 250]
@@ -130,7 +130,7 @@ def main():
     norm_temp_list = []
     test_list = []
 
-    export_to_xlsx(conn_type)
+    export_to_xlsx(conn_type, norm_temp_list, test_list)
 
 
 if __name__ == '__main__':
