@@ -141,7 +141,7 @@ def export_to_xlsx(test_list: list):
             write_to_book.write(row, 9, temperature, body_format)
             write_to_book.write(row, 10, "", body_format)
     book.close()
-    print(f"file save path {getcwd()}/pairwise.xlsx")
+    print(f"file save path {getcwd()}/{filename}")
 
 
 def main():
