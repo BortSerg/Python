@@ -51,7 +51,7 @@ def generate_random_connect_list(test_list: list, connect_type: list):
                             break
 
             test_list[row] = [volt, akb, connect, temp]
-    while True:
+    while True:                                                                # for check repeats random value in normal temp table
         if test_list[-1:][0][2] != test_list[-2:-1][0][2]:
             break
         else:
@@ -123,7 +123,7 @@ def export_to_xlsx(test_list: list):
             write_to_book.write(row + 1, col * 6 + 1, "Voltage", head_text_format)
             write_to_book.write(row + 1, col * 6 + 2, "Connection", head_text_format)
             write_to_book.write(row + 1, col * 6 + 3, "Temp", head_text_format)
-            write_to_book.write(row + 1, col * 6 + 4, "Reusults", head_text_format)
+            write_to_book.write(row + 1, col * 6 + 4, "Results", head_text_format)
 
     # write data to table
     for idx in range(0, len(test_list), 1):
@@ -141,7 +141,7 @@ def export_to_xlsx(test_list: list):
             write_to_book.write(row, 9, temperature, body_format)
             write_to_book.write(row, 10, "", body_format)
     book.close()
-    print(f"file save path {getcwd()}/pairwaise.xlsx")
+    print(f"file save path {getcwd()}/pairwise.xlsx")
 
 
 def main():
