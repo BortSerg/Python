@@ -55,19 +55,13 @@ def export_to_xlsx(connect_type: list, norm_temp_list: list, test_list: list):
         row = x * 10
         write_to_book.set_column('B1:D1', 10) if x == 0 else None
         write_to_book.merge_range(row, col, row, col + 2, f"Temp ({temperature_list[x]}) Low АКБ", head_merge_format)
-        write_to_book.write(row + 1, col, "Connection", head_text_format)
-        write_to_book.write(row + 1, col + 1, "Power", head_text_format)
-        write_to_book.write(row + 1, col + 2, "Result", head_text_format)
-        if x < 2:                                                                                              # Temp (-10/+45) Low АКБ
+        write_to_book.write_row(row+1, col, ("Connection", "Power", "Result"), head_text_format)
+        if x < 2:
             for y in range(3):
-                write_to_book.write(row + 2 + y, col, f"{connect_type[y]}", body_format)
-                write_to_book.write(row + 2 + y, col + 1, f"{power_type[0]}", body_format)
-                write_to_book.write(row + 2 + y, col + 2, "", body_format)
-        else:                                                                                                   # Temp (+25) Low АКБ
+                write_to_book.write_row(row+2+y, col, (connect_type[y], power_type[0], ""), body_format)            # Temp (-10/+45) Low АКБ
+        else:
             for i in range(2):
-                write_to_book.write(row + 2 + i, col, norm_temp_list[i*3], body_format)
-                write_to_book.write(row + 2 + i, col + 1, f"{power_type[0]}", body_format)
-                write_to_book.write(row + 2 + i, col + 2, "", body_format)
+                write_to_book.write_row(row + 2 + i, col, (norm_temp_list[i*3], power_type[0], ""), body_format)    # Temp (+25) Low АКБ
 
     # data in second column
     for x in range(3):
@@ -75,26 +69,16 @@ def export_to_xlsx(connect_type: list, norm_temp_list: list, test_list: list):
         row = x * 10
         write_to_book.set_column('G1:J1', 10) if x == 0 else None
         write_to_book.merge_range(row, col, row, col + 3, f"Temp ({temperature_list[x]}) 220V", head_merge_format)
-        write_to_book.write(row + 1, col, "Voltage", head_text_format)
-        write_to_book.write(row + 1, col + 1, "Connection", head_text_format)
-        write_to_book.write(row + 1, col + 2, "Power", head_text_format)
-        write_to_book.write(row + 1, col + 3, "Result", head_text_format)
-        if x < 2:                                                                                 # data Temp (-10/+45) 220V
+        write_to_book.write_row(row + 1, col, ("Voltage", "Connection", "Power", "Result"), head_text_format)
+        if x < 2:
             for idx, volt in enumerate(voltage_list):
-                write_to_book.write(row + 2 + idx, col, volt, body_format)
                 if x == 0:
-                    write_to_book.write(row + 2 + idx, col + 1, test_list[idx][0], body_format)
+                    write_to_book.write_row(row + 2 + idx, col, (volt, test_list[idx][0], power_type[1], ""), body_format)  # data Temp (-10) 220V
                 if x == 1:
-                    write_to_book.write(row + 2 + idx, col + 1, test_list[idx][2], body_format)
-
-                write_to_book.write(row + 2 + idx, col + 2, power_type[1], body_format)
-                write_to_book.write(row + 2 + idx, col + 3, "", body_format)
+                    write_to_book.write_row(row + 2 + idx, col, (volt, test_list[idx][2], power_type[1], ""), body_format)  # data Temp (+45) 220V
         else:
-            for i in range(2):                                                                      # data Temp (+25) 220V
-                write_to_book.write(row + 2 + i, col, 220, body_format)
-                write_to_book.write(row + 2 + i, col + 1, norm_temp_list[(i * 3) + 1], body_format)
-                write_to_book.write(row + 2 + i, col + 2, power_type[1], body_format)
-                write_to_book.write(row + 2 + i, col + 3, "", body_format)
+            for i in range(2):
+                write_to_book.write_row(row+2+i, col, (220, norm_temp_list[(i * 3) + 1], power_type[1], ""), body_format)   # data Temp (+25) 220V
 
     # data im third column
     for x in range(3):
@@ -102,29 +86,17 @@ def export_to_xlsx(connect_type: list, norm_temp_list: list, test_list: list):
         row = x * 10
         write_to_book.set_column('M1:P1', 11) if x == 0 else None
         write_to_book.merge_range(row, col, row, col + 3, f"Temp ({temperature_list[x]}) От сети+зарядка", head_merge_format)
-        write_to_book.write(row + 1, col, "Voltage", head_text_format)
-        write_to_book.write(row + 1, col + 1, "Connection", head_text_format)
-        write_to_book.write(row + 1, col + 2, "Power", head_text_format)
-        write_to_book.write(row + 1, col + 3, "Result", head_text_format)
+        write_to_book.write_row(row + 1, col, ("Voltage", "Connection", "Power", "Result"), head_text_format)
         if x < 2:
-            write_to_book.write(row + 2, col, 85, body_format)
-            write_to_book.write(row + 2, col + 1, "GPRS", body_format)
-            write_to_book.write(row + 2, col + 2, power_type[2], body_format)
-            write_to_book.write(row + 2, col + 3, "", body_format)
+            write_to_book.write_row(row + 2, col, (85, "GPRS", power_type[1], ""), body_format)
             for idx, volt in enumerate(voltage_list):
-                write_to_book.write(row + 3 + idx, col, volt, body_format)
                 if x == 0:
-                    write_to_book.write(row + 3 + idx, col + 1, test_list[idx][1], body_format)
+                    write_to_book.write_row(row + 3 + idx, col, (volt, test_list[idx][1], power_type[1], ""), body_format)  # data Temp (-10) От сети + зарядка
                 if x == 1:
-                    write_to_book.write(row + 3 + idx, col + 1,  test_list[idx][3], body_format)
-                write_to_book.write(row + 3 + idx, col + 2, power_type[2], body_format)
-                write_to_book.write(row + 3 + idx, col + 3, "", body_format)
-        else:                                                                               # data Temp (+25) 220V + charge
-            for i in range(2):
-                write_to_book.write(row + 2 + i, col, 220, body_format)
-                write_to_book.write(row + 2 + i, col + 1, norm_temp_list[(i * 3) + 2], body_format)
-                write_to_book.write(row + 2 + i, col + 2, power_type[2], body_format)
-                write_to_book.write(row + 2 + i, col + 3, "", body_format)
+                    write_to_book.write_row(row + 3 + idx, col, (volt, test_list[idx][3], power_type[1], ""), body_format)  # data Temp (+45) От сети + зарядка
+        else:
+            for i in range(2):  # data Temp (+25) 220V
+                write_to_book.write_row(row + 2 + i, col, (220, norm_temp_list[(i * 3) + 1], power_type[1], ""), body_format)# data Temp (+25) От сети + зарядка
 
     book.close()
     print(f"file save path {getcwd()}/{filename}")
@@ -136,7 +108,7 @@ def random_norm_temp(connect_type: list):
         count = {"ETH": 0, "GPRS": 0, "ETH+GPRS": 0}
         for col in range(3):
             while True:
-                value = connect_type[randint(0, len(connect_type) - 1)]
+                value = connect_type[randint(0, 2)]
                 if (count[value] == 0 and row == 0) or (count[value] == 0 and row == 1 and value != norm_temp_list[col - 3] and value != norm_temp_list[col - 2]):
                     count[value] += 1
                     break
@@ -150,7 +122,7 @@ def random_test_list(connect_type: list):
         counter = {"ETH": 2, "GPRS": 0, 'ETH+GPRS': 0} if row == 0 else {"ETH": 0, "GPRS": 0, 'ETH+GPRS': 0}
         for col in range(4):
             while True:
-                value = connect_type[randint(0, len(connect_type) - 1)]
+                value = connect_type[randint(0, 2)]
                 if row == 0:
                     if col == 1 or col == 3:
                         value = connect_type[0]
@@ -169,7 +141,7 @@ def random_test_list(connect_type: list):
     counter = {"ETH": 0, "GPRS": 0, 'ETH+GPRS': 0}
     for x in range(4):
         while True:
-            value = connect_type[randint(0, len(connect_type) - 1)]
+            value = connect_type[randint(0, 2)]
             if counter[value] == 0:
                 test_list[3].append(value)
                 counter[value] += 1
