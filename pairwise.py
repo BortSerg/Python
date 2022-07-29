@@ -120,26 +120,17 @@ def export_to_xlsx(test_list: list):
         for col in range(2):
             write_to_book.set_column(col * 6 + 2, col * 6 + 2, 10)
             write_to_book.merge_range(row, col * 6 + 1, row, col * 6 + 4, f"АКБ {akb_status[col]}", head_merge_format)
-            write_to_book.write(row + 1, col * 6 + 1, "Voltage", head_text_format)
-            write_to_book.write(row + 1, col * 6 + 2, "Connection", head_text_format)
-            write_to_book.write(row + 1, col * 6 + 3, "Temp", head_text_format)
-            write_to_book.write(row + 1, col * 6 + 4, "Results", head_text_format)
+            write_to_book.write_row(row + 1, col * 6 + 1, ("Voltage", "Connection", "Temp", "Results"), head_text_format)
 
     # write data to table
     for idx in range(0, len(test_list), 1):
         row = idx + 2
         voltage, akb_status, conn_type, temperature = test_list[idx]
         if akb_status == "Low_AKB":
-            write_to_book.write(row, 1, voltage, body_format)
-            write_to_book.write(row, 2, conn_type, body_format)
-            write_to_book.write(row, 3, temperature, body_format)
-            write_to_book.write(row, 4, "", body_format)
+            write_to_book.write_row(row, 1, (voltage, conn_type, temperature, ""), body_format)
         if akb_status == "Norm_AKB":
             row = row - 5 if idx < 20 else row - 2
-            write_to_book.write(row, 7, voltage, body_format)
-            write_to_book.write(row, 8, conn_type, body_format)
-            write_to_book.write(row, 9, temperature, body_format)
-            write_to_book.write(row, 10, "", body_format)
+            write_to_book.write_row(row, 7, (voltage, conn_type, temperature, ""), body_format)
     book.close()
     print(f"file save path {getcwd()}/{filename}")
 
